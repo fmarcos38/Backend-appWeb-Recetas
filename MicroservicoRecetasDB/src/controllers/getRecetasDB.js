@@ -1,6 +1,6 @@
-const recetasDB = require('../data');
+const recetas = require('../data');
 
 module.exports = async(req, res) => {
-    const recetas = await recetasDB.getRecetasDB();
-    res.status(200).json(recetas);
+    const resp = await recetas.gatRecetasDB();
+    res.status(200).json(resp);
 };

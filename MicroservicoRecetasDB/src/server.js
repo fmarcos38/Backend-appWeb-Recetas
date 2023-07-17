@@ -1,13 +1,26 @@
 const express = require('express');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 const server =express();
+dotenv.config();
 
 server.use(express.json());
 server.use(morgan("dev"));
 
+//--conexion mongoDB----------------------------------------------------------
+mongoose.connect(process.env.MONGO_URI, {
+    /* useCreateIndex: true,
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true, */
+})
+.then(() => console.log("mongoDB is connected"))
+.catch((err) => console.log(err));
+//-----------------------------------------------------------------------
 //importo rutas
-server.use("/recetasDB", require('./routes'));
+server.use("/recetas", require('./routes'));
 
 
 //sino encuentra endpoint
