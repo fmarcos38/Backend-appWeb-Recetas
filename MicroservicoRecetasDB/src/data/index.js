@@ -99,7 +99,7 @@ module.exports = {
     //eliminar
     eliminaReceta: async(req) => {
         try {
-            const { _id } = req.params; console.log("_id: ", _id);
+            const { _id } = req.params; //console.log("_id: ", _id);
             const buscaReceta = await recetasDB.findByIdAndDelete(_id)
 
             return buscaReceta;
