@@ -10,14 +10,9 @@ server.use(express.json());
 server.use(morgan("dev"));
 
 //--conexion mongoDB----------------------------------------------------------
-mongoose.connect(process.env.MONGO_URI, {
-    /* useCreateIndex: true,
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true, */
-})
+/* mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("mongoDB is connected"))
-.catch((err) => console.log(err));
+.catch((err) => console.log(err)); */
 //-----------------------------------------------------------------------
 //importo rutas
 server.use("/recetas", require('./routes'));

@@ -25,17 +25,17 @@ router.post("/:model", validateModel, async(req, res) => {
 
 
 //edita
-router.post("/:model/:_id",validateModel, async(req, res) => {
+router.post("/:model/:_id",validateModel, async(req, res) => {    
     const { model, _id } = req.params;
-    const { title } = req.body;
-    const resp = await modelos[model].edita(_id, title);
+    const resp = await modelos[model].edit(_id, req.body.title);
     res.status(200).json(resp);
 });
 
 //elimina
 router.delete("/:model/:_id",validateModel, async(req, res) => {
     const { model, _id } = req.params;
-    const resp = await modelos[model].elimina(_id);
+    const resp = await modelos[model].delete(_id);
     res.status(200).json(resp);
 });
+
 module.exports = router;

@@ -7,7 +7,8 @@ const RecetaSchema = new Schema({
     analyzedInstructions: { type:Array,}
 });
 
-//aquí mismo escribo los metodos de CRUD
+//aquí mismo escribo los metodos del CRUD
+//trae recetas de la base de datos
 RecetaSchema.statics.list = async function(){
     return await this.find();
 };
@@ -15,32 +16,40 @@ RecetaSchema.statics.list = async function(){
 //crea receta
 RecetaSchema.statics.insert = async function(receta){
     try{
-    console.log("dataInsert: ", receta);
-    const resp = await this.create({
-        title: receta.title,
-        image: receta.image,
-        diets: receta.diets,
-        analyzedInstructions: receta.analyzedInstructions
-    });
-    await resp.save();
-    return resp;
-} catch (error) {
-    console.log(error);
-}
+        //console.log("dataInsert: ", receta);
+        const resp = await this.create({
+            title: receta.title,
+            image: receta.image,
+            diets: receta.diets,
+            analyzedInstructions: receta.analyzedInstructions
+        });
+        await resp.save();
+        return resp;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 //edita
-RecetaSchema.statics.edita = async function(_id, title){
-    const resp = await this.findById({_id: _id});
-    resp.title = title;
-    resp.save();
-    return resp;
+RecetaSchema.statics.edit = async function(_id, title){
+    try {
+        const resp = await this.findById({_id: _id});
+        resp.title = title;
+        resp.save();
+        return resp;
+    } catch (error) {
+        console.log(error);
+    }    
 };
 
 //elimina
-RecetaSchema.statics.elimina = async function(_id){
-    const elimReceta = await this.findByIdAndDelete(_id);
-    return elimReceta;
+RecetaSchema.statics.delete = async function(_id){
+    try {
+        const elimReceta = await this.findByIdAndDelete(_id);
+        return elimReceta;
+    } catch (error) {
+        console.log(error);
+    }    
 };
 
 

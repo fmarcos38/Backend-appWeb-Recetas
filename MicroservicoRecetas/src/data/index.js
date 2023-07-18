@@ -3,48 +3,57 @@ const axios = require('axios');
 const recetasDB = require('../models/receta.js');
 
 
-module.exports = {  
+module.exports = { 
+    //obtengo todas las recetas de la DB 
     gatRecetasDB: async () => {
-        //obtengo todas las recetas de la DB
-        const respDB =  await recetasDB.find();//desp lo cambiaré por el microservicio Q le pega a la DB
-        
-        return respDB;
+        try {            
+            const respDB =  await axios.get("http://localhost:8003/recetas");//desp lo cambiaré por el microservicio Q le pega a la DB
+            return respDB.data;
+        } catch (error) {
+            console.log(error);
+        }        
     },
-
+//obtengo todas las recetas desde la API
     getRecetasAPI: async() => {
-        //obt todas las recetas de la API
-        const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
+        try {
+            //obt todas las recetas de la API
+            const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
         
-        const normalizo = respAPI.data.results.map(r => {
-            return{
-                id: r.id,
-                title: r.title,
-                summary: r.summary.replace(/<[^>]+>/g, ""),
-                diets: r.diets.map((d) => {
-                            return { name: d };
-                        }),
-                healthScore: r.healthScore,
-                image: r.image,
-                createdInDb: false,
-                stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
-                                return `${paso.number}- ${paso.step}`;
-                            })
-            }
-        }); 
+            const normalizo = respAPI.data.results.map(r => {
+                return{
+                    id: r.id,
+                    title: r.title,
+                    summary: r.summary.replace(/<[^>]+>/g, ""),
+                    diets: r.diets.map((d) => {
+                                return { name: d };
+                            }),
+                    healthScore: r.healthScore,
+                    image: r.image,
+                    createdInDb: false,
+                    stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
+                                    return `${paso.number}- ${paso.step}`;
+                                })
+                }
+            }); 
 
-        return normalizo;
-    },
+            return normalizo;
+        } catch (error) {
+            console.log(error);
+        }
+        
+    }, 
 
+    //trae recetas de la API y de la DB
     getAllRecetas: async() => {
         let allR = [];
 
         //obtengo todas las recetas de la DB
-        const respDB =  await recetasDB.find();//desp lo cambiaré por el microservicio Q le pega a la DB
+        const respDB =  await axios.get("http://localhost:8003/recetas/");//desp lo cambiaré por el microservicio Q le pega a la DB
 
         //obt todas las recetas de la API
-        const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
-        
-        const normalizo = respAPI.data.results.map(r => {
+        //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
+
+        /* const normalizo = respAPI.data.results.map(r => {
             return{
                 id: r.id,
                 title: r.title,
@@ -59,35 +68,30 @@ module.exports = {
                                 return `${paso.number}- ${paso.step}`;
                             })
             }
-        });        
+        }); */        
 
-        allR = respDB;
-        allR = [...allR, normalizo];
+        allR = respDB.data;
+        //allR = [...allR, normalizo];
 
         return allR;
     },
 
-
     //creación de receta
-    createReceta: async( ) => {//de acá le voy a pegar al microservicio de DB -> ejm: axios.get("http://dbstarwars:8004/characters");
+    createReceta: async(data) => {//de acá le voy a pegar al microservicio de DB -> ejm: axios.get("http://dbstarwars:8004/characters");
+        try {            
+            const newReceta = await axios.post("http://localhost:8003/recetas", data);
         
-        
-        throw Error("logica sin construir");
+            return newReceta.data;
+        } catch (error) {
+            console.log(error);
+        }        
     },
 
     //editar
-    editaReceta: async(req) => {
-        try {
-            const { _id } = req.params; 
-            const { title } = req.body;
-        
-            const buscaReceta = await recetasDB.findById({_id: _id});            
-    
-            if(title){
-                buscaReceta.title = title
-                buscaReceta.save();
-                return buscaReceta;
-            }
+    editaReceta: async(_id, title) => {
+        try { 
+            const resp = await axios.post(`http://localhost:8003/recetas/${_id}`, title);            
+            return resp.data;
             
         } catch (error) {
             console.log(error);
@@ -100,9 +104,9 @@ module.exports = {
     eliminaReceta: async(req) => {
         try {
             const { _id } = req.params; //console.log("_id: ", _id);
-            const buscaReceta = await recetasDB.findByIdAndDelete(_id)
+            const elimReceta = await axios.delete(`http://localhost:8003/recetas/${_id}`);
 
-            return buscaReceta;
+            return elimReceta;
         } catch (error) {
             console.log(error);
         }        

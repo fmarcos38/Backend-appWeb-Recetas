@@ -1,6 +1,8 @@
 const receta = require('../data')
+const {response} = require('../utils');
 
 module.exports = async (req,res) => {
-    const editaReceta = receta.editaReceta(req); 
-    res.status(200).json(editaReceta);
+    const { _id } = req.params; 
+    const editaReceta = await receta.editaReceta(_id, req.body); 
+    response(res,201, editaReceta);
 }
