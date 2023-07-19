@@ -1,7 +1,6 @@
 const server = require('./src/server');
 
-const PORT = 8003;
-
+const PORT = 8002;
 
 
 server.listen(PORT, () => {

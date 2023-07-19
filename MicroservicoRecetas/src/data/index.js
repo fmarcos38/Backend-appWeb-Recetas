@@ -7,7 +7,7 @@ module.exports = {
     //obtengo todas las recetas de la DB 
     gatRecetasDB: async () => {
         try {            
-            const respDB =  await axios.get("http://localhost:8003/recetas");//desp lo cambiaré por el microservicio Q le pega a la DB
+            const respDB =  await axios.get("http://localhost:8002/dbrecetas/recetas");//desp lo cambiaré por el microservicio Q le pega a la DB
             return respDB.data;
         } catch (error) {
             console.log(error);
@@ -48,7 +48,7 @@ module.exports = {
         let allR = [];
 
         //obtengo todas las recetas de la DB
-        const respDB =  await axios.get("http://localhost:8003/recetas/");//desp lo cambiaré por el microservicio Q le pega a la DB
+        const respDB =  await axios.get("http://localhost:8002/dbrecetas/recetas/");//desp lo cambiaré por el microservicio Q le pega a la DB
 
         //obt todas las recetas de la API
         //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
@@ -79,7 +79,7 @@ module.exports = {
     //creación de receta
     createReceta: async(data) => {//de acá le voy a pegar al microservicio de DB -> ejm: axios.get("http://dbstarwars:8004/characters");
         try {            
-            const newReceta = await axios.post("http://localhost:8003/recetas", data);
+            const newReceta = await axios.post("http://localhost:8002/dbrecetas/recetas", data);
         
             return newReceta.data;
         } catch (error) {
@@ -90,7 +90,7 @@ module.exports = {
     //editar
     editaReceta: async(_id, title) => {
         try { 
-            const resp = await axios.post(`http://localhost:8003/recetas/${_id}`, title);            
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/${_id}`, title);            
             return resp.data;
             
         } catch (error) {
@@ -104,7 +104,7 @@ module.exports = {
     eliminaReceta: async(req) => {
         try {
             const { _id } = req.params; //console.log("_id: ", _id);
-            const elimReceta = await axios.delete(`http://localhost:8003/recetas/${_id}`);
+            const elimReceta = await axios.delete(`http://localhost:8002/dbrecetas/recetas${_id}`);
 
             return elimReceta;
         } catch (error) {

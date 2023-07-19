@@ -5,7 +5,7 @@ const server = express();
 server.use(express.json());
 server.use(morgan("dev"));
 
-server.use('/', require('./routes'));
+server.use('/dbrecetas', require('./routes'));
 
 server.use("*", (req, res) => {
     res.status(404).send("endpoint Not found");
