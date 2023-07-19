@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  gateway:
+    container_name: gateway
+    restart: always
+    build: ./MicroservicioGateway
+    ports:
+      - "8000:8000"
+
+  recetas:
+    container_name: recetas
+    restart: always
+    build: ./MicroservicioRecetas
+    ports:
+      - "8001:8001"
+
+  dbrecetas:
+    container_name: dbrecetas
+    restart: always
+    build: ./MicroservicioDB
+    ports:
+      - "8002:8002"
