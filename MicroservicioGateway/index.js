@@ -5,22 +5,22 @@ const { createProxyMiddleware }  = require('http-proxy-middleware');
 const app = express();
 app.use(morgan("dev"));
 
-const PORT = 8000;
+
 //rutas para c/microservicio
 
 //recetas
 app.use("/recetas", createProxyMiddleware({
-    target: "http://localhost:8001/recetas",
+    target: "http://recetas:8001",     /* target: "http://localhost:8001", */
     changeOrigin: true,
 }));
 
 //database
 app.use("/dbrecetas", createProxyMiddleware({
-    target: "http://localhost:8002/dbrecetas",
+    target: "http://dbrecetas:8002",
     changeOrigin: true,
 }));
 
 
-app.listen(PORT, () => {
-    console.log("server Gateway listen on PORT:", PORT);
+app.listen(8000, () => {
+    console.log("server Gateway listen on PORT:", 8000);
 });

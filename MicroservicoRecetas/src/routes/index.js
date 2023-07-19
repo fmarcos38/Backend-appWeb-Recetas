@@ -1,6 +1,5 @@
 const express = require('express');
 const controllers = require("../controllers");
-const Receta = require('../models/receta');
 /* const middlewares = require("../middlewares"); */
 //para manejo de imagenes 
 //const upload = require("../helpers/multer");
