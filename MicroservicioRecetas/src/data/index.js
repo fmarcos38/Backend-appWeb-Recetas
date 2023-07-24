@@ -47,12 +47,12 @@ module.exports = {
         let allR = [];
 
         //obtengo todas las recetas de la DB
-        const respDB =  await axios.get("http://dbrecetas:8002/dbrecetas/recetas/");//desp lo cambiaré por el microservicio Q le pega a la DB
+        const respDB =  await axios.get("http://dbrecetas:8002/dbrecetas/recetas/");//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
 
         //obt todas las recetas de la API
-        //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
+        const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
 
-        /* const normalizo = respAPI.data.results.map(r => {
+        const normalizo = respAPI.data.results.map(r => {
             return{
                 id: r.id,
                 title: r.title,
@@ -67,12 +67,11 @@ module.exports = {
                                 return `${paso.number}- ${paso.step}`;
                             })
             }
-        }); */        
+        });        
 
         allR = respDB.data;
-        //allR = [...allR, normalizo];
-
-        return allR;
+        allR = allR.concat(normalizo);
+        return allR; 
     },
 
     //creación de receta

@@ -5,5 +5,6 @@ const conn = mongoose.createConnection(MONGO_URI); //conexión con la DB
 
 //acá creo y exporto al mismo tiempo los modelos
 module.exports = {
-    recetas: conn.model("recetas", require('./shcemas/recetasShema'))
+    recetas: conn.model("recetas", require('./shcemas/recetasShema')),
+    users: conn.model("users", require('./shcemas/userSchema'))
 }
