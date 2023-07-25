@@ -14,7 +14,7 @@ module.exports = {
         }
     },
 
-    //trae users DB
+    //trae users DB -->desde postman --> http://localhost:8000/users
     listaUsers: async () => {
         try {
             let resp = await axios.get("http://localhost:8002/dbrecetas/users");
@@ -27,7 +27,7 @@ module.exports = {
         
                 } 
             }); */
-            return resp;
+            return resp.data;
         } catch (error) {
             console.log(error);
         }

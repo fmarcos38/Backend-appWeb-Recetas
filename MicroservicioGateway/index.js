@@ -17,7 +17,7 @@ app.use("/users", createProxyMiddleware({
 
 //recetas
 app.use("/recetas", createProxyMiddleware({
-    target: "http://localhos:8001",     // target: "http://localhost:8001", o este -> target: "http://recetas:8001",
+    target: "http://localhost:8001",     // target: "http://localhost:8001", o este -> target: "http://recetas:8001",
     changeOrigin: true,
 }));
 
