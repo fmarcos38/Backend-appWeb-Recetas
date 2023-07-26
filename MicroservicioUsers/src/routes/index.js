@@ -6,7 +6,8 @@ const router = express.Router();
 //rutas
 router.post('/', controllers.createUser);
 
-router.get('/', controllers.listaUsers);
+//trae todos los users
+router.get('/:email', controllers.listaUsers);
 
 router.delete('/', controllers.eliminaUser);
 

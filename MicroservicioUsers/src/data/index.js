@@ -15,24 +15,18 @@ module.exports = {
     },
 
     //trae users DB -->desde postman --> http://localhost:8000/users
-    listaUsers: async () => {
+    listaUsers: async (email) => {
+        console.log("emailData:", email)
         try {
-            let resp = await axios.get("http://localhost:8002/dbrecetas/users");
-            /* resp = resp.data;
-            let normalizoData = resp.map(u => {
-                return{
-                    _id: u._id,
-                    name: u.name, 
-                    email: u.email,
-        
-                } 
-            }); */
+            let resp = await axios.get(`http://localhost:8002/dbrecetas/users/${email}`);
+            
             return resp.data;
         } catch (error) {
             console.log(error);
         }
     },
 
+    
     //elimina
     eliminaReceta: async(req) => {
         try {
