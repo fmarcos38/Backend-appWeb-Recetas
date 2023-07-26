@@ -27,6 +27,11 @@ app.use("/dbrecetas", createProxyMiddleware({
     changeOrigin: true,
 }));
 
+//auth
+app.use("/auth", createProxyMiddleware({
+    target: "http://localhost:8004",
+    changeOrigin: true,
+}));
 
 app.listen(8000, () => {
     console.log("server Gateway listen on PORT:", 8000);
