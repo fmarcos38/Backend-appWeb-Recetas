@@ -64,11 +64,13 @@ Userschema.statics.buscaPorMail = async function(email){
 
 //elimna
 Userschema.statics.delete = async function (_id){
-    try {
+    try { 
         const resp = await this.findByIdAndDelete(_id);
         return resp;
     } catch (error) {
         console.log(error);
     } 
 };
+
+
 module.exports = Userschema;

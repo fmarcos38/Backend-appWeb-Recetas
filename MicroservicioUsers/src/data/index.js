@@ -38,11 +38,10 @@ module.exports = {
 
     
     //elimina
-    eliminaReceta: async(req) => {
-        try {
-            const { _id } = req.params; //console.log("_id: ", _id);
-            const elimUser = await axios.delete(`http://localhost:8002/dbrecetas/users${_id}`);
-
+    eliminaUser: async (_id) => {
+        try { console.log("_idData: ", _id);
+            const elimUser = await axios.delete(`http://localhost:8002/dbrecetas/users/${_id}`);
+console.log("resp:", elimUser);
             return elimUser;
         } catch (error) {
             console.log(error);
