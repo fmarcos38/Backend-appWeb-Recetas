@@ -6,7 +6,7 @@ module.exports = {
     //funcion crear user
     createUser: async (data) => {
         try {
-            //console.log("dataFrontMicroUser: ", data);
+            console.log("dataFrontMicroUser: ", data);
             const resp = await axios.post("http://localhost:8002/dbrecetas/users", data);//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
             return resp.data;
         } catch (error) {
@@ -39,9 +39,9 @@ module.exports = {
     
     //elimina
     eliminaUser: async (_id) => {
-        try { console.log("_idData: ", _id);
+        try { 
             const elimUser = await axios.delete(`http://localhost:8002/dbrecetas/users/${_id}`);
-console.log("resp:", elimUser);
+
             return elimUser;
         } catch (error) {
             console.log(error);
