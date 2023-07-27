@@ -15,8 +15,18 @@ module.exports = {
     },
 
     //trae users DB -->desde postman --> http://localhost:8000/users
-    listaUsers: async (email) => {
-        console.log("emailData:", email)
+    listaUsers: async () => {
+        try {
+            let resp = await axios.get("http://localhost:8002/dbrecetas/users");
+            
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    
+    
+    buscaPorMail: async (email) => {        
         try {
             let resp = await axios.get(`http://localhost:8002/dbrecetas/users/${email}`);
             

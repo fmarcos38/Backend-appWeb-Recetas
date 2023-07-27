@@ -8,9 +8,18 @@ const router = Router();
 //rutas
 //creo 1 sola ruta GET para q mute entre modelos(en este proyecto SOLO está rectas)
 //recibo por params el nombre del modelo
+router.get("/:model", validateModel, async(req, res) => {
+    
+    const { model } = req.params; 
+    const resp = await modelos[model].list();//model --> indica el modelo al q ac referencia(recetas,)
+    
+    res.status(200).json(resp);
+});
+
+//busca por mail
 router.get("/:model/:email", validateModel, async(req, res) => {
-    const { model, email } = req.params; console.log("emailRoute:", email);
-    const resp = await modelos[model].list(email);//model --> indica el modelo al q ac referencia(recetas,)
+    const { model, email } = req.params; 
+    const resp = await modelos[model].buscaPorMail(email);//model --> indica el modelo al q ac referencia(recetas,)
     
     res.status(200).json(resp);
 });

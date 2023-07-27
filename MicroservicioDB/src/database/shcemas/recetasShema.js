@@ -10,7 +10,9 @@ const RecetaSchema = new Schema({
 //aquí mismo escribo los metodos del CRUD
 //trae recetas de la base de datos
 RecetaSchema.statics.list = async function(){
-    return await this.find();
+    let rec =  await this.find();
+    console.log("rec:", rec)
+    return rec;
 };
 
 //crea receta

@@ -47,31 +47,19 @@ Userschema.statics.insert = async function(data){
     }
 };
 
+//lista users
+Userschema.statics.list = async function(){
+
+    return await this.find();
+
+}
+
 //trae users desd la DB
-Userschema.statics.list = async function(email){
+Userschema.statics.buscaPorMail = async function(email){    
     
-    console.log("emailSchema:", email)
-    if(email){
-        const resp = await this.findOne({email: email})
-        return resp;
-    }else{
-        const resp =  await this.find();
-    
-        //nomralizo para no mandar al Front el pass del user
-        const normalizoData = resp.map(u => {
-            return{
-                _id: u._id,
-                name: u.name, 
-                email: u.email,
-                role: "cliente",
-                favorites: [],
-                verified: false,
-                bloqueado: false    
-            } 
-        }); 
-    
-        return normalizoData;
-    }    
+    const resp = await this.findOne({email: email})
+    return resp;
+
 };
 
 //elimna

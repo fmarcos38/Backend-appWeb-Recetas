@@ -7,8 +7,12 @@ const router = express.Router();
 router.post('/', controllers.createUser);
 
 //trae todos los users
-router.get('/:email', controllers.listaUsers);
+router.get("/", controllers.listaUsers);
 
-router.delete('/', controllers.eliminaUser);
+// busca por email 
+router.get('/:email', controllers.buscaPorMail);
+
+//elim user
+router.delete('/:_id', controllers.eliminaUser);
 
 module.exports = router;
