@@ -5,8 +5,7 @@ const axios = require('axios');
 module.exports = {
     //funcion crear user
     createUser: async (data) => {
-        try {
-            console.log("dataFrontMicroUser: ", data);
+        try {            
             const resp = await axios.post("http://localhost:8002/dbrecetas/users", data);//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
             return resp.data;
         } catch (error) {

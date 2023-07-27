@@ -11,7 +11,6 @@ const RecetaSchema = new Schema({
 //trae recetas de la base de datos
 RecetaSchema.statics.list = async function(){
     let rec =  await this.find();
-    console.log("rec:", rec)
     return rec;
 };
 

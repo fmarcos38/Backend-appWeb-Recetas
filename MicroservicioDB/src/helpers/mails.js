@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-
+const { MAIL, PASS } = require('../config/dotenv');
 //para desp de registrarse
 const sendConfirmationEmail = async(user,token)=>{
 //console.log("userSendMail:", user)
@@ -13,8 +13,10 @@ const sendConfirmationEmail = async(user,token)=>{
             rejectUnauthorized: false
         },
         auth: {
-            user: "proyecto_recetas@hotmail.com",   
-            pass: "140183Marcos"
+            user: "elvencoffe@hotmail.com",   
+            pass: "franco140183"
+            /* user: {MAIL},   
+            pass: {PASS} */
         }
     });
 
@@ -23,13 +25,14 @@ const sendConfirmationEmail = async(user,token)=>{
     const urlConfirm=`https:/localhost:3000/home?token=${token}`;//es a donde te redirige al precionar el btn_confirmar_registro
     //cont del email
     var mailOptions = {
-        from: '"Proyecto Recetas" <proyecto_recetas@hotmail.com>', // sender address (who sends)
+        from: '"Proyecto Recetas" <elvencoffe@hotmail.com>', // sender address (who sends)
         to: user.email, // al q se le manda
         subject: 'Hello ', // Subject line
         html:`
             <center>
             <h3>Gracias por registrarte!</h3>
-            <p>Haz click en el siguiente link para confirmar tu cuenta:<a href="${urlConfirm}"> Confirm </a></p>
+            <br/>
+            <p>Haz click en el siguiente link para confirmar tu cuenta: <a href="${urlConfirm}"> Confirmar</a></p>
             <img src=https://i.blogs.es/87930e/comidas-ricas/1366_2000.jpg width="250px" height="250px" />
             </center>
         `

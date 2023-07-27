@@ -33,7 +33,7 @@ module.exports = {
             //busco user
             let user = await axios.get(`http://localhost:8002/dbrecetas/users/${data.email}`);
             user = user.data;
-            console.log("userEncontrado:", user.data);
+            
             if(!user.name){
                 return {message: "user not found"};
             }else{
