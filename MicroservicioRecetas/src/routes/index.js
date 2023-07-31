@@ -16,6 +16,8 @@ router.get('/', controllers.getAllRecetas);
 
 //crea
 router.post('/', controllers.createReceta);
+//crea desde API
+router.get('/creaDesdeApi', controllers.createRecetasApi);
 
 
 //edita

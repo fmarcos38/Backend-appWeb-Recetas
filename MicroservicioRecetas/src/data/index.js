@@ -11,13 +11,12 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }        
-    },
-    
+    },    
     //obtengo todas las recetas desde la API
     getRecetasAPI: async() => {
         try {
             //obt todas las recetas de la API
-            const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
+            const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=20&addRecipeInformation=true`);
         
             const normalizo = respAPI.data.results.map(r => {
                 return{
@@ -41,7 +40,8 @@ module.exports = {
             console.log(error);
         }
         
-    }, 
+    },
+    
 
     //trae recetas de la API y de la DB
     getAllRecetas: async() => {
@@ -72,6 +72,8 @@ module.exports = {
         /* allR = respDB.data;
         if(normalizo[0]){ return allR = allR.concat(normalizo); }        
         else{ return allR; } */
+
+        
         allR = respDB.data;
         return allR;
     },
@@ -86,6 +88,35 @@ module.exports = {
         }       
     },
 
+    //crea recetas tomadas desde la api, en la DB 
+    createRecetasDesdeApi: async() => {
+        try {
+            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=20&addRecipeInformation=true`);
+        
+            const normalizo = recetasApi.data.results.map(r => {
+                return{
+                    id: r.id,
+                    title: r.title,
+                    summary: r.summary.replace(/<[^>]+>/g, ""),
+                    diets: r.diets.map((d) => {
+                                return { name: d };
+                            }),
+                    healthScore: r.healthScore,
+                    image: r.image,
+                    createdInDb: false,
+                    stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
+                                    return `${paso.number}- ${paso.step}`;
+                                })
+                }
+            });
+            console.log("normalizo:", normalizo)
+            const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/creaDesdeApi", normalizo);
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }, 
+    
     //editar
     editaReceta: async(_id, title) => {
         try { 

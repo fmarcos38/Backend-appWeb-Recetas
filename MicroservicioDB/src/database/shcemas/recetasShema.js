@@ -14,7 +14,8 @@ RecetaSchema.statics.list = async function(){
     return rec;
 };
 
-//crea receta
+
+//crea receta , tambien en ves de crear de a una podria corroborar si lo q me llega COMO parametro es un array Y crear de una sola ves todas las del array
 RecetaSchema.statics.insert = async function(receta){
     try{
         //console.log("dataInsert: ", receta);
@@ -29,7 +30,20 @@ RecetaSchema.statics.insert = async function(receta){
     } catch (error) {
         console.log(error);
     }
-}
+};
+//crea recetas desde la api(me llega un array)
+RecetaSchema.statics.insertRecetasApi = async function(recetas){
+    try {
+        for(let i=0; i<recetas.length; i++){
+            let resp = await this.create(recetas[i]);
+            await resp.save();
+        }
+        return {message: "Creadas con exito"};
+    } catch (error) {
+        
+    }
+};
+
 
 //edita
 RecetaSchema.statics.edit = async function(_id, title){

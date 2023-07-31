@@ -28,11 +28,14 @@ router.get("/:model/:email", validateModel, async(req, res) => {
 //crea
 router.post("/:model", validateModel, async(req, res) => {
     const { model } = req.params;
-    console.log("dataR:", req.body)
     const resp = await modelos[model].insert(req.body);
     res.status(200).json(resp);
 });
-
+router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
+    const { model } = req.params;
+    const resp = await modelos[model].insertRecetasApi(req.body);
+    res.status(200).json(resp);
+});
 
 //edita
 /* router.post("/:model/:_id",validateModel, async(req, res) => {    
