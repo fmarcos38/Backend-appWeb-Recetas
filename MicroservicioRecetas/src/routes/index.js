@@ -18,14 +18,17 @@ router.post('/', controllers.createReceta);
 //crea desde API
 router.get('/creaDesdeApi', controllers.createRecetasApi);
 
+//filtra
+router.post('/filtro', controllers.filtraRecetas);
+
 //edita
 router.post('/:_id', controllers.editaReceta);
 
 //elimina
 router.delete('/:_id', controllers.eleminaReceta);
 
-//filtra
-router.post('/filtro', controllers.filtraRecetas);
+
+
 
 
 
