@@ -73,7 +73,6 @@ module.exports = {
         if(normalizo[0]){ return allR = allR.concat(normalizo); }        
         else{ return allR; } */
 
-        
         allR = respDB.data;
         return allR;
     },
@@ -91,7 +90,7 @@ module.exports = {
     //crea recetas tomadas desde la api, en la DB 
     createRecetasDesdeApi: async() => {
         try {
-            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=20&addRecipeInformation=true`);
+            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=60&addRecipeInformation=true`);
         
             const normalizo = recetasApi.data.results.map(r => {
                 return{
@@ -108,8 +107,7 @@ module.exports = {
                                     return `${paso.number}- ${paso.step}`;
                                 })
                 }
-            });
-            console.log("normalizo:", normalizo)
+            });            
             const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/creaDesdeApi", normalizo);
             return resp.data;
         } catch (error) {
@@ -140,5 +138,15 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }        
-    }
+    },
+
+    //filtra recetas
+    filtraRecetas: async(filtro) => {
+        try {
+            const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/filtro", filtro);
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 }  

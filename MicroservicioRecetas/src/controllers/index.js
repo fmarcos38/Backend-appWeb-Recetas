@@ -4,4 +4,5 @@ module.exports = {
     createRecetasApi: require('./createRecetasApi'),
     editaReceta: require('./editaReceta'),
     eleminaReceta: require('./eliminaReceta'),
+    filtraRecetas: require('./filtraRecetas'),
 }
