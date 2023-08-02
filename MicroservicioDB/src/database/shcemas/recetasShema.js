@@ -93,20 +93,36 @@ RecetaSchema.statics.delete = async function(_id){
 };
 
 //filtraRecetas
-RecetaSchema.statics.filtra = async function(filtro){
+RecetaSchema.statics.filtra = async function(desdeFront, dieta){
     //filtra SOLO x un tipo, NO combina.
     try {        
-        const allR = await this.find();
+        
+        const desd = Number(desdeFront) || 0;
+        const registrosPorPagina = 19; //atento a expandir este num PARA q llene el paginado minimo x pagina
+
+        const [recetas, totalRecetasDB] = await Promise.all([
+            this.find().skip(desd).limit(registrosPorPagina),
+            this.countDocuments()//obt totalRecetas
+        ]);
+        
         let resul = [];
         
-        for (let i = 0; i < allR.length; i++) {
-            for (let j = 0; j < allR[i].diets.length; j++) {
-                if(allR[i].diets[j].name === filtro){
-                    resul.push(allR[i]);
+        for (let i = 0; i < recetas.length; i++) {
+            for (let j = 0; j < recetas[i].diets.length; j++) {
+                if(recetas[i].diets[j].name === dieta){
+                    resul.push(recetas[i]);
                 }                
             }            
         }
-        return resul;
+        
+        return {
+            resul,
+            page: {
+                desd,
+                registrosPorPagina,
+                totalRecetasDB
+            }
+        }
     } catch (error) {
         
     }

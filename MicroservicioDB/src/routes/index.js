@@ -54,7 +54,10 @@ router.delete("/:model/:_id",validateModel, async(req, res) => {
 //filtraRecetas
 router.post("/:model/filtro", validateModel, async(req, res) => {
     const { model } = req.params;
-    const resp = await modelos[model].filtra(req.body.filtro);
+    const { desde } = req.query;
+    const { dieta } = req.body;
+    
+    const resp = await modelos[model].filtra(desde, dieta);
     res.status(200).json(resp);
 });
 
