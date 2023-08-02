@@ -141,9 +141,10 @@ module.exports = {
     },
 
     //filtra recetas
-    filtraRecetas: async(filtro) => {
+    filtraRecetas: async(desde, dieta) => {
         try {
-            const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/filtro", filtro);
+            console.log("dieta", dieta)
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/filtro?desde=${desde}`, dieta);            
             return resp.data;
         } catch (error) {
             console.log(error);
