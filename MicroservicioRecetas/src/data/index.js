@@ -44,10 +44,10 @@ module.exports = {
     
 
     //trae recetas de la API y de la DB
-    getAllRecetas: async() => {
+    getAllRecetas: async(desde) => {
         let allR = [];
         //obtengo todas las recetas de la DB
-        const respDB =  await axios.get("http://localhost:8002/dbrecetas/recetas");//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
+        const respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
 
         //obt todas las recetas de la API
         //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
