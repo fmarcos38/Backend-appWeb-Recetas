@@ -44,11 +44,19 @@ module.exports = {
     
 
     //trae recetas de la API y de la DB
-    getAllRecetas: async(desde) => {
-        let allR = [];
-        //obtengo todas las recetas de la DB
-        const respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
-
+    getAllRecetas: async(desde, dieta) => {
+        try {
+            let respDB = [];
+            let allR = [];
+console.log("dietaR:", dieta)
+            if(!dieta){
+                //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
+            }else{
+                //con filtro
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}`);
+            }
+            
         //obt todas las recetas de la API
         //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
 
@@ -73,8 +81,11 @@ module.exports = {
         if(normalizo[0]){ return allR = allR.concat(normalizo); }        
         else{ return allR; } */
 
-        allR = respDB.data;
-        return allR;
+            allR = respDB.data; console.log("allR:", allR)
+            return allR;
+        } catch (error) {
+            console.log(error)
+        }        
     },
 
     //creación de receta
@@ -143,7 +154,7 @@ module.exports = {
     //filtra recetas
     filtraRecetas: async(desde, dieta) => {
         try {
-            console.log("dieta", dieta)
+            console.log("dietaSch", dieta)
             const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/filtro?desde=${desde}`, dieta);            
             return resp.data;
         } catch (error) {

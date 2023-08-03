@@ -11,7 +11,10 @@ const router = Router();
 router.get("/:model", validateModel, async(req, res) => {
     const { model } = req.params; 
     const { desde } = req.query;
-    const resp = await modelos[model].list(desde);//model --> indica el modelo al q ac referencia(recetas,)
+    const { dieta } = req.query;
+    console.log("desdeDB:", desde)
+    console.log("dietaDB:", dieta)
+    const resp = await modelos[model].list(desde, dieta);//model --> indica el modelo al q ac referencia(recetas,)
     
     res.status(200).json(resp);
 });

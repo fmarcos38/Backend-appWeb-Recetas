@@ -8,26 +8,54 @@ const RecetaSchema = new Schema({
 });
 
 //aquí mismo escribo los metodos del CRUD
-//trae recetas de la base de datos - realizo a su vez el paginado
-RecetaSchema.statics.list = async function(desdeFront){ 
+//trae recetas de la base de datos - realizo a su vez el paginado y filtrado por dieta
+RecetaSchema.statics.list = async function(desdeFront, dietaFront){ 
 
     try {
+        console.log("dietaSch:", dietaFront)
         const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
-        const registrosPorPagina = 5;
-        
+        //para los registros SI viene filtro le agendo el indice
+        let registrosPorPagina = 0;
+        if(dietaFront){
+            registrosPorPagina = 20;
+        }else{
+            registrosPorPagina = 5;
+        }
+        //array para el filtrado por dieta
+        let resul = [];
+
         //de esta manera estoy pegandolé a la DB 2vcs por separado, podría generar retrasos
         //const recetas =  await this.find().skip(desde).limit(registrosPorPagina);
         //const totalRecetasDB = await this.countDocuments();
         
         //en cambio puedo utilizar la funcion Promise.all(), para lanzar las 2 al mismo tiempo
         //hago destructurin para almacenar el result de dichas promesas
-        const [recetas, totalRecetasDB] = await Promise.all([
+        const [recetasDB, totalRecetasDB] = await Promise.all([
             this.find().skip(desde).limit(registrosPorPagina),
             this.countDocuments()
         ]);
 
+        if(dietaFront){
+            for (let i = 0; i < recetasDB.length; i++) {
+                for (let j = 0; j < recetasDB[i].diets.length; j++) {
+                    if(recetasDB[i].diets[j].name === dietaFront){
+                        resul.push(recetasDB[i]);
+                    }                
+                }            
+            }
+            return {
+                recetas: resul,
+                page: {
+                    desde,
+                    registrosPorPagina,
+                    totalRecetasDB
+                }
+            };
+        }
+        
+        
         return {
-            recetas,
+            recetas: recetasDB,
             page: {
                 desde,
                 registrosPorPagina,
@@ -124,7 +152,7 @@ RecetaSchema.statics.filtra = async function(desdeFront, dieta){
             }
         }
     } catch (error) {
-        
+        console.log(error);
     }
 }
 module.exports = RecetaSchema;

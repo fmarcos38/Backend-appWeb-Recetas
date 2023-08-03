@@ -1,7 +1,7 @@
 const recetas = require('../data');
 
 module.exports = async (req, res) => {
-    console.log("desde", req.query);
-    const resp = await recetas.getAllRecetas(req.query.desde);
+    const { desde, dieta } = req.query;
+    const resp = await recetas.getAllRecetas(desde, dieta);
     res.status(200).json(resp);
 };
