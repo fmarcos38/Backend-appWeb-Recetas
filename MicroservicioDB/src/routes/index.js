@@ -12,13 +12,17 @@ router.get("/:model", validateModel, async(req, res) => {
     const { model } = req.params; 
     const { desde } = req.query;
     const { dieta } = req.query;
-    console.log("desdeDB:", desde)
-    console.log("dietaDB:", dieta)
     const resp = await modelos[model].list(desde, dieta);//model --> indica el modelo al q ac referencia(recetas,)
     
     res.status(200).json(resp);
 });
-
+//trae receta por id
+router.get("/:model/:_id", validateModel, async(req, res) => {
+    const { model, _id } = req.params;
+    const resp = await modelos[model].listById(_id);
+    res.status(200).json(resp);
+});
+/*----------usuarios----------------*/
 //busca por mail
 router.get("/:model/:email", validateModel, async(req, res) => {
     const { model, email } = req.params; 
@@ -36,6 +40,7 @@ router.post("/:model", validateModel, async(req, res) => {
 });
 router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
     const { model } = req.params;
+    
     const resp = await modelos[model].insertRecetasApi(req.body);
     res.status(200).json(resp);
 });

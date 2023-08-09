@@ -2,8 +2,12 @@ const {Schema} = require("mongoose");
 
 const RecetaSchema = new Schema({
     title: {type: String, require: true, unique: true},
+    summary: {type: String},
     image: {type: String},
     diets: { type:Array,},
+    healthScore: {type: Number},
+    likes: {type: Number},
+    createdInDb: {type: String},
     analyzedInstructions: { type:Array,}
 });
 
@@ -12,15 +16,10 @@ const RecetaSchema = new Schema({
 RecetaSchema.statics.list = async function(desdeFront, dietaFront){ 
 
     try {
-        console.log("dietaSch:", dietaFront)
         const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
         //para los registros SI viene filtro le agendo el indice
-        let registrosPorPagina = 0;
-        if(dietaFront){
-            registrosPorPagina = 20;
-        }else{
-            registrosPorPagina = 5;
-        }
+        let registrosPorPagina = 20;
+        
         //array para el filtrado por dieta
         let resul = [];
 
@@ -34,12 +33,27 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
             this.find().skip(desde).limit(registrosPorPagina),
             this.countDocuments()
         ]);
+    
+        //normalizo para no mandar toda la info de c/receta al front
+        let normalizo = recetasDB.map(r => {
+            return{
+                id: r._id,
+                title: r.title,                
+                diets: r.diets.map((d) => {
+                    return { name: d };
+                }),
+                healthScore: r.healthScore,
+                image: r.image,
+                likes: r.likes
+            }
+        });
+
 
         if(dietaFront){
-            for (let i = 0; i < recetasDB.length; i++) {
-                for (let j = 0; j < recetasDB[i].diets.length; j++) {
-                    if(recetasDB[i].diets[j].name === dietaFront){
-                        resul.push(recetasDB[i]);
+            for (let i = 0; i < normalizo.length; i++) {
+                for (let j = 0; j < normalizo[i].diets.length; j++) {
+                    if(normalizo[i].diets[j].name === dietaFront){
+                        resul.push(normalizo[i]);
                     }                
                 }            
             }
@@ -51,8 +65,7 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
                     totalRecetasDB
                 }
             };
-        }
-        
+        }        
         
         return {
             recetas: recetasDB,
@@ -68,6 +81,15 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
     
 };
 
+//trae receta por id
+RecetaSchema.statics.listById = async function(_id){
+    try {
+        const resp = await this.findById(_id);
+        return resp;
+    } catch (error) {
+        console.log(error);
+    }
+}
 //crea receta , tambien en ves de crear de a una podria corroborar si lo q me llega COMO parametro es un array Y crear de una sola ves todas las del array
 RecetaSchema.statics.insert = async function(receta){
     try{
@@ -87,9 +109,11 @@ RecetaSchema.statics.insert = async function(receta){
 
 //crea recetas desde la api(me llega un array)
 RecetaSchema.statics.insertRecetasApi = async function(recetas){
-    try {
-        for(let i=0; i<recetas.length; i++){
-            let resp = await this.create(recetas[i]);
+    try {        
+        let arr = recetas;
+        console.log("arr: ", arr)
+        for(let i=0; i<arr.length; i++){
+            let resp = await this.create(arr[i]);
             await resp.save();
         }
         return {message: "Creadas con exito"};

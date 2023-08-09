@@ -16,26 +16,45 @@ module.exports = {
     getRecetasAPI: async() => {
         try {
             //obt todas las recetas de la API
-            const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=20&addRecipeInformation=true`);
-        
+            const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=5000&addRecipeInformation=true&addRecipeNutrition=true`);
+            let cont = 0;
+            //normalizo
             const normalizo = respAPI.data.results.map(r => {
+                cont++;
                 return{
-                    id: r.id,
                     title: r.title,
-                    summary: r.summary.replace(/<[^>]+>/g, ""),
                     diets: r.diets.map((d) => {
-                                return { name: d };
-                            }),
-                    healthScore: r.healthScore,
+                        return { name: d };
+                    }),
+                    healthScore: r.healthScore || 0,
+                    likes: 0,
                     image: r.image,
-                    createdInDb: false,
-                    stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
-                                    return `${paso.number}- ${paso.step}`;
-                                })
+                    nutrition: r.nutrition.nutrients.map(n => {
+                        return{
+                            name: n.name,
+                            amount: n.amount,
+                            unit: n.unit,
+                            porcentageDiarioReq: n.percentOfDailyNeeds
+                        }
+                    }),
+                    analyzedInstructions: r.analyzedInstructions[0]?.steps.map((paso) => {
+                        return {
+                            number: paso.number,
+                            step: paso.step,
+                            ingredients: paso.ingredients.map(i => {
+                                return {
+                                    name: i.name,
+                                }
+                            })
+                        };
+                    }),                    
                 }
             }); 
 
-            return normalizo;
+            //divido en arrays
+console.log("cont: ",cont)
+            return normalizo;           
+
         } catch (error) {
             console.log(error);
         }
@@ -48,7 +67,7 @@ module.exports = {
         try {
             let respDB = [];
             let allR = [];
-console.log("dietaR:", dieta)
+
             if(!dieta){
                 //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
@@ -81,11 +100,21 @@ console.log("dietaR:", dieta)
         if(normalizo[0]){ return allR = allR.concat(normalizo); }        
         else{ return allR; } */
 
-            allR = respDB.data; console.log("allR:", allR)
+            allR = respDB.data; 
             return allR;
         } catch (error) {
             console.log(error)
         }        
+    },
+    
+    //trae po ID
+    getRecetaById: async(_id) => {
+        try {
+            const resp = await axios.get(`http://localhost:8002/dbrecetas/recetas/${_id}`);
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
     },
 
     //creación de receta
@@ -98,28 +127,44 @@ console.log("dietaR:", dieta)
         }       
     },
 
-    //crea recetas tomadas desde la api, en la DB 
+    //crea recetas tomadas desde la api, en la DB (de a 60)
     createRecetasDesdeApi: async() => {
         try {
-            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=60&addRecipeInformation=true`);
+            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
         
             const normalizo = recetasApi.data.results.map(r => {
                 return{
-                    id: r.id,
                     title: r.title,
-                    summary: r.summary.replace(/<[^>]+>/g, ""),
                     diets: r.diets.map((d) => {
-                                return { name: d };
-                            }),
-                    healthScore: r.healthScore,
+                        return { name: d };
+                    }),
+                    healthScore: r.healthScore || 0,
+                    likes: 0,
                     image: r.image,
-                    createdInDb: false,
-                    stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
-                                    return `${paso.number}- ${paso.step}`;
-                                })
+                    nutrition: r.nutrition.nutrients.map(n => {
+                        return{
+                            name: n.name,
+                            amount: n.amount,
+                            unit: n.unit,
+                            porcentageDiarioReq: n.percentOfDailyNeeds
+                        }
+                    }),
+                    analyzedInstructions: r.analyzedInstructions[0]?.steps.map((paso) => {
+                        return {
+                            number: paso.number,
+                            step: paso.step,
+                            ingredients: paso.ingredients.map(i => {
+                                return {
+                                    name: i.name,
+                                }
+                            })
+                        };
+                    }),
                 }
-            });            
+            }); 
+            
             const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/creaDesdeApi", normalizo);
+            console.log("resp.data: ", resp)
             return resp.data;
         } catch (error) {
             console.log(error);
