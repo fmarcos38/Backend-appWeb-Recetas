@@ -45,5 +45,16 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }        
-    }
+    },
+
+    /* favoritos */
+    //agrega fav
+    agregaFav: async(email, _id) =>{
+        try {            
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/users/agregaFav/${email}`, {_id:_id});
+            return resp.data;          
+        } catch (error) {
+            console.log(error);
+        }
+    },
 }

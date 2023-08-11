@@ -6,7 +6,7 @@ const router = Router();
 
 
 //rutas
-//creo 1 sola ruta GET para q mute entre modelos(en este proyecto SOLO está rectas)
+//creo 1 sola ruta GET para q mute entre modelos
 //recibo por params el nombre del modelo
 router.get("/:model", validateModel, async(req, res) => {
     const { model } = req.params; 
@@ -16,13 +16,36 @@ router.get("/:model", validateModel, async(req, res) => {
     
     res.status(200).json(resp);
 });
+
+
+/*----------RUTAS EXCLUSIVAS RECETAS-----------------------------------------------------------*/
+
+//ATENTO Q CUANDO ES UNA RUTA PARA UN SCHEMA EN PARTICULAR , ESPECIFICACRCELÓ
+router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
+    const { model } = req.params;
+    
+    const resp = await modelos[model].insertRecetasApi(req.body);
+    res.status(200).json(resp);
+});
+
 //trae receta por id
-router.get("/:model/:_id", validateModel, async(req, res) => {
+router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     const { model, _id } = req.params;
     const resp = await modelos[model].listById(_id);
     res.status(200).json(resp);
 });
-/*----------usuarios----------------*/
+
+//filtraRecetas
+router.post("/:model/filtro", validateModel, async(req, res) => {
+    const { model } = req.params;
+    const resp = await modelos[model].filtra(req.query.desde, req.body.dieta);
+    res.status(200).json(resp);
+});
+/*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
+
+
+
+/*----------RUTAS EXCLUSIVAS USERS---------------------------------------------------------------*/
 //busca por mail
 router.get("/:model/:email", validateModel, async(req, res) => {
     const { model, email } = req.params; 
@@ -31,19 +54,28 @@ router.get("/:model/:email", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
+//agrega favoritos
+router.post("/:model/agregaFav/:email", validateModel, async(req, res) => {
+    const { model, email } = req.params; 
+    const { _id } = req.body; 
+    console.log("_id:", _id)
+    const resp = await modelos[model].agregaFav(email, _id);
+    res.status(200).json(resp);
+});
+/*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
 
+
+
+/*--------------RUTAS COMUNES--------------------------------------------------------------------*/
 //crea
 router.post("/:model", validateModel, async(req, res) => {
     const { model } = req.params;
     const resp = await modelos[model].insert(req.body);
     res.status(200).json(resp);
 });
-router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
-    const { model } = req.params;
-    
-    const resp = await modelos[model].insertRecetasApi(req.body);
-    res.status(200).json(resp);
-});
+
+
+
 
 //edita
 /* router.post("/:model/:_id",validateModel, async(req, res) => {    
@@ -59,11 +91,6 @@ router.delete("/:model/:_id",validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
-//filtraRecetas
-router.post("/:model/filtro", validateModel, async(req, res) => {
-    const { model } = req.params;
-    const resp = await modelos[model].filtra(req.query.desde, req.body.dieta);
-    res.status(200).json(resp);
-});
+
 
 module.exports = router;

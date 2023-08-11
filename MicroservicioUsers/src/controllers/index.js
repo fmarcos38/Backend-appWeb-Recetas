@@ -3,4 +3,5 @@ module.exports = {
     listaUsers: require('./listaUsers'),
     buscaPorMail: require('./buscaPorMail'),
     eliminaUser: require('./eleiminaUser'),
+    agregaFav: require('./agregaFav'),
 }

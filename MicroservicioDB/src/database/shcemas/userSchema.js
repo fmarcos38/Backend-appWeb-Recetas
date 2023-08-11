@@ -72,5 +72,28 @@ Userschema.statics.delete = async function (_id){
     } 
 };
 
+//agrega a fav --> creo un array SOLO con los Id de c/receta
+Userschema.statics.agregaFav = async function(email, _id){
+    try {        
+        const user = await this.findOne({email: email});
+        
+        //if(typeof(_id) !== String) { return {message: "No vino el id"}} //verif el tipo del id
+        if(user.name){
+            if(user.favorites.find(r => r === _id)){
+                return {message: "Ya existe"};
+            }else{
+                user.favorites.push(_id);
+                await user.save();
+                return {fav:user.favorites, message: "agregado con exito"};
+            }            
+        }else{
+            return {message: "No existe user"};
+        }
+    } catch (error) {
+        
+    }
+};
+
+
 
 module.exports = Userschema;
