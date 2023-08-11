@@ -93,7 +93,26 @@ Userschema.statics.agregaFav = async function(email, _id){
         
     }
 };
+//elim fav
+Userschema.statics.eliminaFav = async function(email, _id){
+    try {
+        const user = await this.findOne({email: email});
+        //busco q el id exista EN el array de fav
+        const buscaID = user.favorites.find(id => id === _id);
 
+        if(user.name){
+            if(buscaID){
+                user.favorites = user.favorites.filter(id => id !== _id);
+                await user.save();
+                return {fav:user.favorites, message: "El id se quitó"}
+            }else{
+                return {message: "El id no existe"}
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 
 module.exports = Userschema;

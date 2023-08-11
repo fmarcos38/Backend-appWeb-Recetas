@@ -17,5 +17,9 @@ router.delete('/:_id', controllers.eliminaUser);
 
 //agrega a favoritos
 router.post('/agregafav/:email', controllers.agregaFav);
+//elim fav
+router.post('/elimFav/:email', controllers.eliminaFav);
+
+
 
 module.exports = router;

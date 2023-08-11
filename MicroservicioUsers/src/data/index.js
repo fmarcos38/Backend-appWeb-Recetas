@@ -57,4 +57,12 @@ module.exports = {
             console.log(error);
         }
     },
+    eliminaFav: async(email, _id) =>{
+        try {
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/users/elimFav/${email}`, {_id:_id});
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 }
