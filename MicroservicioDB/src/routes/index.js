@@ -35,12 +35,6 @@ router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
-//filtraRecetas
-router.post("/:model/filtro", validateModel, async(req, res) => {
-    const { model } = req.params;
-    const resp = await modelos[model].filtra(req.query.desde, req.body.dieta);
-    res.status(200).json(resp);
-});
 /*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
 
 

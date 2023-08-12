@@ -16,68 +16,69 @@ const RecetaSchema = new Schema({
 RecetaSchema.statics.list = async function(desdeFront, dietaFront){ 
 
     try {
-        const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
-        //para los registros SI viene filtro le agendo el indice
-        let registrosPorPagina = 20;
-        
-        //array para el filtrado por dieta
-        let resul = [];
-
-        //de esta manera estoy pegandolé a la DB 2vcs por separado, podría generar retrasos
-        //const recetas =  await this.find().skip(desde).limit(registrosPorPagina);
-        //const totalRecetasDB = await this.countDocuments();
-        
-        //en cambio puedo utilizar la funcion Promise.all(), para lanzar las 2 al mismo tiempo
-        //hago destructurin para almacenar el result de dichas promesas
-        const [recetasDB, totalRecetasDB] = await Promise.all([
-            this.find().skip(desde).limit(registrosPorPagina),
-            this.countDocuments()
-        ]);
+            const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
+            //para los registros SI viene filtro le agendo el indice
+            let registrosPorPagina = 20;
+            
+            //array para el filtrado por dieta
+            let resul = [];
     
-        //normalizo para no mandar toda la info de c/receta al front
-        let normalizo = recetasDB.map(r => {
-            return{
-                id: r._id,
-                title: r.title,                
-                diets: r.diets.map((d) => {
-                    return { name: d };
-                }),
-                healthScore: r.healthScore,
-                image: r.image,
-                likes: r.likes
-            }
-        });
-
-
-        if(dietaFront){
-            for (let i = 0; i < normalizo.length; i++) {
-                for (let j = 0; j < normalizo[i].diets.length; j++) {
-                    if(normalizo[i].diets[j].name === dietaFront){
-                        resul.push(normalizo[i]);
-                    }                
-                }            
-            }
-            return {
-                recetas: resul,
-                page: {
-                    desde,
-                    registrosPorPagina,
-                    totalRecetasDB
-                }
-            };
-        }        
+            //de esta manera estoy pegandolé a la DB 2vcs por separado, podría generar retrasos
+            //const recetas =  await this.find().skip(desde).limit(registrosPorPagina);
+            //const totalRecetasDB = await this.countDocuments();
+            
+            //en cambio puedo utilizar la funcion Promise.all(), para lanzar las 2 al mismo tiempo
+            //hago destructurin para almacenar el result de dichas promesas
+            const [recetasDB, totalRecetasDB] = await Promise.all([
+                this.find().skip(desde).limit(registrosPorPagina),
+                this.countDocuments()
+            ]);
         
-        return {
-            recetas: recetasDB,
-            page: {
-                desde,
-                registrosPorPagina,
-                totalRecetasDB
-            }
-        };
-    } catch (error) {
-        console.log(error);
-    }
+            //normalizo para no mandar toda la info de c/receta al front
+            let normalizo = recetasDB.map(r => {
+                return{
+                    id: r._id,
+                    title: r.title,                
+                    diets: r.diets.map((d) => {
+                        return d ;
+                    }),
+                    healthScore: r.healthScore,
+                    image: r.image,
+                    likes: r.likes
+                }
+            });
+    
+    
+            if(dietaFront){
+                for (let i = 0; i < normalizo.length; i++) {
+                    for (let j = 0; j < normalizo[i].diets.length; j++) {
+                        if(normalizo[i].diets[j].name === dietaFront){
+                            resul.push(normalizo[i]);
+                        }                
+                    }            
+                }
+                return {
+                    recetas: resul,
+                    page: {
+                        desde,
+                        registrosPorPagina,
+                        totalRecetasDB
+                    }
+                };
+            }else{
+                return {
+                    recetas: normalizo,
+                    page: {
+                        desde,
+                        registrosPorPagina,
+                        totalRecetasDB
+                    }
+                };
+            }     
+                
+        } catch (error) {
+            console.log(error);
+        }
     
 };
 
@@ -144,39 +145,5 @@ RecetaSchema.statics.delete = async function(_id){
     }    
 };
 
-//filtraRecetas
-RecetaSchema.statics.filtra = async function(desdeFront, dieta){
-    //filtra SOLO x un tipo, NO combina.
-    try {        
-        
-        const desd = Number(desdeFront) || 0;
-        const registrosPorPagina = 19; //atento a expandir este num PARA q llene el paginado minimo x pagina
 
-        const [recetas, totalRecetasDB] = await Promise.all([
-            this.find().skip(desd).limit(registrosPorPagina),
-            this.countDocuments()//obt totalRecetas
-        ]);
-        
-        let resul = [];
-        
-        for (let i = 0; i < recetas.length; i++) {
-            for (let j = 0; j < recetas[i].diets.length; j++) {
-                if(recetas[i].diets[j].name === dieta){
-                    resul.push(recetas[i]);
-                }                
-            }            
-        }
-        
-        return {
-            resul,
-            page: {
-                desd,
-                registrosPorPagina,
-                totalRecetasDB
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
 module.exports = RecetaSchema;
