@@ -22,10 +22,6 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
             
             //array para el filtrado por dieta
             let resul = [];
-    
-            //de esta manera estoy pegandolé a la DB 2vcs por separado, podría generar retrasos
-            //const recetas =  await this.find().skip(desde).limit(registrosPorPagina);
-            //const totalRecetasDB = await this.countDocuments();
             
             //en cambio puedo utilizar la funcion Promise.all(), para lanzar las 2 al mismo tiempo
             //hago destructurin para almacenar el result de dichas promesas
@@ -47,8 +43,7 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
                     likes: r.likes
                 }
             });
-    
-    
+
             if(dietaFront){
                 for (let i = 0; i < normalizo.length; i++) {
                     for (let j = 0; j < normalizo[i].diets.length; j++) {
@@ -74,8 +69,8 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
                         totalRecetasDB
                     }
                 };
-            }     
-                
+            }
+
         } catch (error) {
             console.log(error);
         }
@@ -91,6 +86,78 @@ RecetaSchema.statics.listById = async function(_id){
         console.log(error);
     }
 }
+
+//busca receta por palabra
+RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dietaFront){
+
+    try {
+        console.log("desdeFront: ", desdeFront);
+        console.log("palabra: ", palabra);
+        console.log("dietaFront: ", dietaFront);
+        const desde = Number(desdeFront) || 0;
+        let registrosPorPagina = 20;
+        let resul = [];
+        const [recetasDB, totalRecetasDB] = await Promise.all([
+            this.find().skip(desde).limit(registrosPorPagina),
+            this.countDocuments()
+        ]);
+        //normalizo para no mandar toda la info de c/receta al front
+        let normalizo = recetasDB.map(r => {
+            return{
+                id: r._id,
+                title: r.title,                
+                diets: r.diets.map((d) => {
+                    return d ;
+                }),
+                healthScore: r.healthScore,
+                image: r.image,
+                likes: r.likes
+            }
+        });
+        //console.log("normalizo: ", normalizo); //OK
+
+        //pasar el titulo de la receta de string a array(para poder recorrerlo)
+        let arrRecetasFP = [];
+        if(palabra){
+            for(let m = 0; m < normalizo.length; m ++){
+                let result = normalizo[m].title.includes(palabra);
+                if(result){
+                    arrRecetasFP.push(normalizo[m]);
+                }
+            }
+        }
+        
+        if(dietaFront){
+            for (let i = 0; i < arrRecetasFP.length; i++) {
+                for (let j = 0; j < arrRecetasFP[i].diets.length; j++) {
+                    if(arrRecetasFP[i].diets[j].name === dietaFront){
+                        resul.push(arrRecetasFP[i]);
+                    }                
+                }            
+            }
+            return {
+                recetas: resul,
+                page: {
+                    desde,
+                    registrosPorPagina,
+                    totalRecetasDB
+                }
+            };
+        }else{
+            return {
+                recetas: arrRecetasFP,
+                page: {
+                    desde,
+                    registrosPorPagina,
+                    totalRecetasDB
+                }
+            };
+        }
+    } catch (error) {
+        
+    }
+};
+
 //crea receta , tambien en ves de crear de a una podria corroborar si lo q me llega COMO parametro es un array Y crear de una sola ves todas las del array
 RecetaSchema.statics.insert = async function(receta){
     try{

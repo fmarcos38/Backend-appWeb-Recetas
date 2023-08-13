@@ -35,6 +35,16 @@ router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
+router.get("/:model/buscaPalabra", validateModel, async(req, res) => {
+    const { model } = req.params; 
+    const { desde } = req.query;
+    const { palabra } = req.query;
+    const { dieta } = req.query;
+    const resp = await modelos[model].buscaPorPalabra(desde, palabra, dieta);
+    
+    res.status(200).json(resp);
+});
+
 /*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
 
 
