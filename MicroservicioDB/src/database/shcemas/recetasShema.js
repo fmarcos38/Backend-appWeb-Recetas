@@ -90,17 +90,15 @@ RecetaSchema.statics.listById = async function(_id){
 //busca receta por palabra
 RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dietaFront){
 
-    try {
-        console.log("desdeFront: ", desdeFront);
-        console.log("palabra: ", palabra);
-        console.log("dietaFront: ", dietaFront);
+    try {  //http://localhost:8002/dbrecetas/recetas/buscaPAlabra?desde=0&palabra=Broccoli&dieta=primal
         const desde = Number(desdeFront) || 0;
         let registrosPorPagina = 20;
         let resul = [];
         const [recetasDB, totalRecetasDB] = await Promise.all([
-            this.find().skip(desde).limit(registrosPorPagina),
+            this.find(),
             this.countDocuments()
         ]);
+
         //normalizo para no mandar toda la info de c/receta al front
         let normalizo = recetasDB.map(r => {
             return{
@@ -116,7 +114,7 @@ RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dieta
         });
         //console.log("normalizo: ", normalizo); //OK
 
-        //pasar el titulo de la receta de string a array(para poder recorrerlo)
+        //busco la palabra en el title
         let arrRecetasFP = [];
         if(palabra){
             for(let m = 0; m < normalizo.length; m ++){
@@ -126,8 +124,9 @@ RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dieta
                 }
             }
         }
-        
+        /* filtro por dieta */
         if(dietaFront){
+            /* filtro dieta */
             for (let i = 0; i < arrRecetasFP.length; i++) {
                 for (let j = 0; j < arrRecetasFP[i].diets.length; j++) {
                     if(arrRecetasFP[i].diets[j].name === dietaFront){
@@ -144,6 +143,7 @@ RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dieta
                 }
             };
         }else{
+            /* pagino de a 20 por pag UNA vez realizados todos los filtros  */            
             return {
                 recetas: arrRecetasFP,
                 page: {
