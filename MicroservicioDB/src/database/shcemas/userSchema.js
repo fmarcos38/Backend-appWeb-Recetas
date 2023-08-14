@@ -73,57 +73,35 @@ Userschema.statics.delete = async function (_id){
     } 
 };
 
-//agrega a fav --> creo un array SOLO con los Id de c/receta
+//agrega/elimnina a fav --> creo un array SOLO con los Id de c/receta
 Userschema.statics.agregaFav = async function(email, _id){
     try {        
         const user = await this.findOne({email: email});
         
-        //if(typeof(_id) !== String) { return {message: "No vino el id"}} //verif el tipo del id
         if(user.name){
             if(user.favorites.find(r => r === _id)){
-                return {message: "Ya existe"};
+                user.favorites = user.favorites.filter(id => id !== _id);
             }else{
-                user.favorites.push(_id);
-                await user.save();
-                return {fav:user.favorites, message: "agregado con exito"};
+                user.favorites.push(_id);                
             }            
-        }else{
-            return {message: "No existe user"};
         }
+        await user.save();
+        return user.favorites;
+    
     } catch (error) {
         
     }
 };
-//elim fav
-Userschema.statics.eliminaFav = async function(email, _id){
-    try {
-        const user = await this.findOne({email: email});
-        //busco q el id exista EN el array de fav
-        const buscaID = user.favorites.find(id => id === _id);
-
-        if(user.name){
-            if(buscaID){
-                user.favorites = user.favorites.filter(id => id !== _id);
-                await user.save();
-                return {fav:user.favorites, message: "El id se quitó"}
-            }else{
-                return {message: "El id no existe"}
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-};
 
 //megusta/noMegusta
-Userschema.statics.meGusdta = async function(email, _id){
+Userschema.statics.meGusta = async function(email, _id){
     try {
-        const user = await findOne({email: email});
+        const user = await this.findOne({email: email});
 
         if(user){
             const buscoID = user.meGusta.find(id => id === _id);
             if(buscoID){
-                user.meGusta.filter(id => id !== _id);//elimino
+                user.meGusta = user.meGusta.filter(id => id !== _id);//elimino
             }else{
                 user.meGusta.push(_id)
             }

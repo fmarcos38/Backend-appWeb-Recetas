@@ -4,5 +4,5 @@ module.exports = {
     buscaPorMail: require('./buscaPorMail'),
     eliminaUser: require('./eleiminaUser'),
     agregaFav: require('./agregaFav'),
-    eliminaFav: require('./eliminaFav'),
+    meGusta: require('./meGusta'),
 }

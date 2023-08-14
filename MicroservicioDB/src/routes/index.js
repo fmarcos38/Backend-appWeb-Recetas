@@ -48,18 +48,19 @@ router.get("/:model/:email", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
-//agrega favoritos
+//agrega/elim favoritos
 router.post("/:model/agregaFav/:email", validateModel, async(req, res) => {
     const { model, email } = req.params; 
     const { _id } = req.body; 
     const resp = await modelos[model].agregaFav(email, _id);
     res.status(200).json(resp);
 });
-//elim fav
-router.post("/:model/elimFav/:email", validateModel, async(req, res) => {
+
+//me gusta
+router.post("/:model/meGusta/:email", validateModel, async(req, res) => {
     const { model, email } = req.params; 
     const { _id } = req.body; 
-    const resp = await modelos[model].eliminaFav(email, _id);
+    const resp = await modelos[model].meGusta(email, _id);
     res.status(200).json(resp);
 });
 /*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/

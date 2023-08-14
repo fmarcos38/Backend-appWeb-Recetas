@@ -1,5 +1,6 @@
 //desde este arch tomo los datos YA sean desd una API o una DB
 const axios = require('axios');
+const { post } = require('../../../MicroservicioDB/src/database/shcemas/userSchema');
 
 //exporto funciones
 module.exports = {
@@ -60,6 +61,16 @@ module.exports = {
     eliminaFav: async(email, _id) =>{
         try {
             const resp = await axios.post(`http://localhost:8002/dbrecetas/users/elimFav/${email}`, {_id:_id});
+            return resp.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    //me gusta
+    meGusta: async(email, _id) => {
+        try {
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/users/meGusta/${email}`, {_id:_id});
             return resp.data;
         } catch (error) {
             console.log(error);
