@@ -11,8 +11,9 @@ const router = Router();
 router.get("/:model", validateModel, async(req, res) => {
     const { model } = req.params; 
     const { desde } = req.query;
+    const { palabra } = req.query;
     const { dieta } = req.query;
-    const resp = await modelos[model].list(desde, dieta);//model --> indica el modelo al q ac referencia(recetas,)
+    const resp = await modelos[model].list(desde, palabra, dieta);//model --> indica el modelo al q ac referencia(recetas,)
     
     res.status(200).json(resp);
 });
@@ -20,7 +21,6 @@ router.get("/:model", validateModel, async(req, res) => {
 
 /*----------RUTAS EXCLUSIVAS RECETAS-----------------------------------------------------------*/
 
-//ATENTO Q CUANDO ES UNA RUTA PARA UN SCHEMA EN PARTICULAR , ESPECIFICACRCELÓ
 router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
     const { model } = req.params;
     
@@ -32,16 +32,6 @@ router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
 router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     const { model, _id } = req.params;
     const resp = await modelos[model].listById(_id);
-    res.status(200).json(resp);
-});
-
-router.get("/:model/buscaPalabra", validateModel, async(req, res) => {
-    const { model } = req.params; 
-    const { desde } = req.query;
-    const { palabra } = req.query;
-    const { dieta } = req.query;
-    const resp = await modelos[model].buscaPorPalabra(desde, palabra, dieta);
-    
     res.status(200).json(resp);
 });
 

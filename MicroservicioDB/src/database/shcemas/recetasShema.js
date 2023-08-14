@@ -13,38 +13,119 @@ const RecetaSchema = new Schema({
 
 //aquí mismo escribo los metodos del CRUD
 //trae recetas de la base de datos - realizo a su vez el paginado y filtrado por dieta
-RecetaSchema.statics.list = async function(desdeFront, dietaFront){ 
+RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront){ 
 
     try {
             const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
             //para los registros SI viene filtro le agendo el indice
-            let registrosPorPagina = 20;
-            
+            let registrosPorPagina = 20;            
             //array para el filtrado por dieta
             let resul = [];
             
-            //en cambio puedo utilizar la funcion Promise.all(), para lanzar las 2 al mismo tiempo
-            //hago destructurin para almacenar el result de dichas promesas
-            const [recetasDB, totalRecetasDB] = await Promise.all([
-                this.find().skip(desde).limit(registrosPorPagina),
-                this.countDocuments()
-            ]);
-        
-            //normalizo para no mandar toda la info de c/receta al front
-            let normalizo = recetasDB.map(r => {
-                return{
-                    id: r._id,
-                    title: r.title,                
-                    diets: r.diets.map((d) => {
-                        return d ;
-                    }),
-                    healthScore: r.healthScore,
-                    image: r.image,
-                    likes: r.likes
-                }
-            });
+            /* SI viene palabra y DIETA---------------------------------------------------------*/
+            if(palabraFront && dietaFront){
+                const [recetasDB] = await Promise.all([
+                    this.find(),
+                    this.countDocuments()
+                ]);
+                //normalizo para no mandar toda la info de c/receta al front
+                let normalizo = recetasDB.map(r => {
+                    return{
+                        id: r._id,
+                        title: r.title,                
+                        diets: r.diets.map((d) => {
+                            return d ;
+                        }),
+                        healthScore: r.healthScore,
+                        image: r.image,
+                        likes: r.likes
+                    }
+                });
 
-            if(dietaFront){
+                //busco la palabra en el title
+                let arrRecetasFP = [];
+                for(let m = 0; m < normalizo.length; m ++){
+                    let result = normalizo[m].title.includes(palabraFront);
+                    if(result){
+                        arrRecetasFP.push(normalizo[m]);
+                    }
+                }
+                
+                /* filtro por dieta */                
+                for (let i = 0; i < arrRecetasFP.length; i++) {
+                    for (let j = 0; j < arrRecetasFP[i].diets.length; j++) {
+                        if(arrRecetasFP[i].diets[j].name === dietaFront){
+                            resul.push(arrRecetasFP[i]);
+                        }                
+                    }            
+                }
+                return {
+                    recetas: resul,
+                    page: {
+                        desde,
+                        registrosPorPagina,
+                        totalConsultaAct: resul.length
+                    }
+                };
+                
+            }
+            /* SI SOLO viene  PALABRA-----------------------------------------------------------*/
+            else if(palabraFront){
+                const [recetasDB, totalRecetasDB] = await Promise.all([
+                    this.find(),
+                    this.countDocuments()
+                ]);
+                //normalizo para no mandar toda la info de c/receta al front
+                let normalizo = recetasDB.map(r => {
+                    return{
+                        id: r._id,
+                        title: r.title,                
+                        diets: r.diets.map((d) => {
+                            return d ;
+                        }),
+                        healthScore: r.healthScore,
+                        image: r.image,
+                        likes: r.likes
+                    }
+                });
+
+                //busco la palabra en el title
+                let arrRecetasFP = [];
+                for(let m = 0; m < normalizo.length; m ++){
+                    let result = normalizo[m].title.includes(palabra);
+                    if(result){
+                        arrRecetasFP.push(normalizo[m]);
+                    }
+                }
+                return {
+                    recetas: arrRecetasFP,
+                    page: {
+                        desde,
+                        registrosPorPagina,
+                        totalConsultaAct: arrRecetasFP.length
+                    }
+                };
+                
+            }
+            /* SI SOLO viene DIETA -----------------------------------------------------------------*/
+            else if(dietaFront){
+                const [recetasDB] = await Promise.all([
+                    this.find().skip(desde).limit(registrosPorPagina)
+                ]);            
+                //normalizo para no mandar toda la info de c/receta al front
+                let normalizo = recetasDB.map(r => {
+                    return{
+                        id: r._id,
+                        title: r.title,                
+                        diets: r.diets.map((d) => {
+                            return d ;
+                        }),
+                        healthScore: r.healthScore,
+                        image: r.image,
+                        likes: r.likes
+                    }
+                });
+                /* filtro por dieta */
                 for (let i = 0; i < normalizo.length; i++) {
                     for (let j = 0; j < normalizo[i].diets.length; j++) {
                         if(normalizo[i].diets[j].name === dietaFront){
@@ -57,10 +138,29 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
                     page: {
                         desde,
                         registrosPorPagina,
-                        totalRecetasDB
+                        totalConsultaAct: resul.length
                     }
                 };
-            }else{
+            }
+            /* si SOLO es Enviar las recetas paginadas SIN filtros ----------------------------*/
+            else{
+                const [recetasDB, totalRecetasDB] = await Promise.all([
+                    this.find().skip(desde).limit(registrosPorPagina),
+                    this.countDocuments()
+                ]);
+                //normalizo para no mandar toda la info de c/receta al front
+                let normalizo = recetasDB.map(r => {
+                    return{
+                        id: r._id,
+                        title: r.title,                
+                        diets: r.diets.map((d) => {
+                            return d ;
+                        }),
+                        healthScore: r.healthScore,
+                        image: r.image,
+                        likes: r.likes
+                    }
+                });
                 return {
                     recetas: normalizo,
                     page: {
@@ -70,7 +170,6 @@ RecetaSchema.statics.list = async function(desdeFront, dietaFront){
                     }
                 };
             }
-
         } catch (error) {
             console.log(error);
         }
@@ -84,77 +183,6 @@ RecetaSchema.statics.listById = async function(_id){
         return resp;
     } catch (error) {
         console.log(error);
-    }
-}
-
-//busca receta por palabra
-RecetaSchema.statics.buscaPorPalabra = async function(desdeFront, palabra, dietaFront){
-
-    try {  //http://localhost:8002/dbrecetas/recetas/buscaPAlabra?desde=0&palabra=Broccoli&dieta=primal
-        const desde = Number(desdeFront) || 0;
-        let registrosPorPagina = 20;
-        let resul = [];
-        const [recetasDB, totalRecetasDB] = await Promise.all([
-            this.find(),
-            this.countDocuments()
-        ]);
-
-        //normalizo para no mandar toda la info de c/receta al front
-        let normalizo = recetasDB.map(r => {
-            return{
-                id: r._id,
-                title: r.title,                
-                diets: r.diets.map((d) => {
-                    return d ;
-                }),
-                healthScore: r.healthScore,
-                image: r.image,
-                likes: r.likes
-            }
-        });
-        //console.log("normalizo: ", normalizo); //OK
-
-        //busco la palabra en el title
-        let arrRecetasFP = [];
-        if(palabra){
-            for(let m = 0; m < normalizo.length; m ++){
-                let result = normalizo[m].title.includes(palabra);
-                if(result){
-                    arrRecetasFP.push(normalizo[m]);
-                }
-            }
-        }
-        /* filtro por dieta */
-        if(dietaFront){
-            /* filtro dieta */
-            for (let i = 0; i < arrRecetasFP.length; i++) {
-                for (let j = 0; j < arrRecetasFP[i].diets.length; j++) {
-                    if(arrRecetasFP[i].diets[j].name === dietaFront){
-                        resul.push(arrRecetasFP[i]);
-                    }                
-                }            
-            }
-            return {
-                recetas: resul,
-                page: {
-                    desde,
-                    registrosPorPagina,
-                    totalRecetasDB
-                }
-            };
-        }else{
-            /* pagino de a 20 por pag UNA vez realizados todos los filtros  */            
-            return {
-                recetas: arrRecetasFP,
-                page: {
-                    desde,
-                    registrosPorPagina,
-                    totalRecetasDB
-                }
-            };
-        }
-    } catch (error) {
-        
     }
 };
 
