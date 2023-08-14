@@ -63,42 +63,27 @@ console.log("cont: ",cont)
     
 
     //trae recetas de la API y de la DB
-    getAllRecetas: async(desde, dieta) => {
+    getAllRecetas: async(desde, palabra, dieta) => {
         try {
+            console.log("desde",desde);
+        console.log("palabra",palabra);
+        console.log("dieta",dieta);
             let respDB = [];
             let allR = [];
 
-            if(!dieta){
-                //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
-                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
-            }else{
+            if(dieta && palabra){
+                //con filtro
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}`);
+            }else if(!dieta && palabra){
+                //con filtro
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}`);
+            }else if(dieta && !palabra){
                 //con filtro
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}`);
+            }else{
+                //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
             }
-            
-        //obt todas las recetas de la API
-        //const respAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
-
-        /* let normalizo = respAPI.data.results.map(r => {
-            return{
-                id: r.id,
-                title: r.title,
-                summary: r.summary.replace(/<[^>]+>/g, ""),
-                diets: r.diets.map((d) => {
-                            return { name: d };
-                        }),
-                healthScore: r.healthScore,
-                image: r.image,
-                createdInDb: false,
-                stepByStep: r.analyzedInstructions[0]?.steps.map((paso) => {
-                                return `${paso.number}- ${paso.step}`;
-                            })
-            }
-        }); */        
-
-        /* allR = respDB.data;
-        if(normalizo[0]){ return allR = allR.concat(normalizo); }        
-        else{ return allR; } */
 
             allR = respDB.data; 
             return allR;

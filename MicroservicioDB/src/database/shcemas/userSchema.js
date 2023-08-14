@@ -11,6 +11,7 @@ const Userschema = new Schema({
     password: {type: String, require: true},
     role: { type: String, default: 'cliente', },/* el otro rol es -->admin */
     favorites:{ type:Array, default:[] },
+    meGusta:{ type:Array, default:[] },
     verified:{ type:Boolean, default:false },
     bloqueado:{ type:Boolean, default:false }
 });
@@ -114,5 +115,23 @@ Userschema.statics.eliminaFav = async function(email, _id){
     }
 };
 
+//megusta/noMegusta
+Userschema.statics.meGusdta = async function(email, _id){
+    try {
+        const user = await findOne({email: email});
 
+        if(user){
+            const buscoID = user.meGusta.find(id => id === _id);
+            if(buscoID){
+                user.meGusta.filter(id => id !== _id);//elimino
+            }else{
+                user.meGusta.push(_id)
+            }
+        }
+        user.save();
+        return user.meGusta;
+    } catch (error) {
+        
+    }
+};
 module.exports = Userschema;

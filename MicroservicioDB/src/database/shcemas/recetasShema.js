@@ -31,7 +31,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 //normalizo para no mandar toda la info de c/receta al front
                 let normalizo = recetasDB.map(r => {
                     return{
-                        id: r._id,
+                        _id: r._id,
                         title: r.title,                
                         diets: r.diets.map((d) => {
                             return d ;
@@ -78,7 +78,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 //normalizo para no mandar toda la info de c/receta al front
                 let normalizo = recetasDB.map(r => {
                     return{
-                        id: r._id,
+                        _id: r._id,
                         title: r.title,                
                         diets: r.diets.map((d) => {
                             return d ;
@@ -92,7 +92,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 //busco la palabra en el title
                 let arrRecetasFP = [];
                 for(let m = 0; m < normalizo.length; m ++){
-                    let result = normalizo[m].title.includes(palabra);
+                    let result = normalizo[m].title.includes(palabraFront);
                     if(result){
                         arrRecetasFP.push(normalizo[m]);
                     }
@@ -115,7 +115,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 //normalizo para no mandar toda la info de c/receta al front
                 let normalizo = recetasDB.map(r => {
                     return{
-                        id: r._id,
+                        _id: r._id,
                         title: r.title,                
                         diets: r.diets.map((d) => {
                             return d ;
@@ -151,7 +151,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 //normalizo para no mandar toda la info de c/receta al front
                 let normalizo = recetasDB.map(r => {
                     return{
-                        id: r._id,
+                        _id: r._id,
                         title: r.title,                
                         diets: r.diets.map((d) => {
                             return d ;
@@ -176,7 +176,7 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
     
 };
 
-//trae receta por id
+//trae receta por _id
 RecetaSchema.statics.listById = async function(_id){
     try {
         const resp = await this.findById(_id);

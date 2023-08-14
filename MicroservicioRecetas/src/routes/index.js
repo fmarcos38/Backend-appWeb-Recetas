@@ -14,6 +14,8 @@ const router = express.Router();
 router.get('/', controllers.getAllRecetas);
 //trae por ID
 router.get('/:_id', controllers.getRecetaById);
+
+
 //trae de la API
 //router.get("/api", controllers.getRecetasAPi);
 //crea desde API
@@ -23,9 +25,6 @@ router.get('/:_id', controllers.getRecetaById);
 //crea
 router.post('/', controllers.createReceta);
 
-
-//filtra
-router.post('/filtro', controllers.filtraRecetas);
 
 //edita
 router.post('/:_id', controllers.editaReceta);
