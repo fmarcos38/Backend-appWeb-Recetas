@@ -95,7 +95,7 @@ console.log("cont: ",cont)
     //trae po ID
     getRecetaById: async(_id) => {
         try {
-            const resp = await axios.get(`http://localhost:8002/dbrecetas/recetas/${_id}`);
+            const resp = await axios.get(`http://localhost:8002/dbrecetas/recetas/busca/${_id}`);
             return resp.data;
         } catch (error) {
             console.log(error);

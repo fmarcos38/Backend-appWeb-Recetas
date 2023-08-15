@@ -43,7 +43,7 @@ router.get("/:model/busca/:_id", validateModel, async(req, res) => {
 //busca por mail
 router.get("/:model/:email", validateModel, async(req, res) => {
     const { model, email } = req.params; 
-    const resp = await modelos[model].buscaPorMail(email);//model --> indica el modelo al q ac referencia(recetas,)
+    const resp = await modelos[model].buscaPorMail(email);
     
     res.status(200).json(resp);
 });
