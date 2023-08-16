@@ -13,22 +13,21 @@ const RecetaSchema = new Schema({
 
 //aquí mismo escribo los metodos del CRUD
 //trae recetas de la base de datos - realizo a su vez el paginado y filtrado por dieta
-RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront){ 
+RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront, hastaFront){ 
+    console.log("desde",desdeFront);
+            console.log("palabra",palabraFront);
+            console.log("dieta",dietaFront);
+            console.log("hasta",hastaFront);
 
     try {
             const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
             //para los registros SI viene filtro le agendo el indice
             let registrosPorPagina = 20;            
             //array para el filtrado por dieta
-            let resul = [];
             
-            /* SI viene palabra y DIETA---------------------------------------------------------*/
-            if(palabraFront && dietaFront){
-                const [recetasDB] = await Promise.all([
-                    this.find(),
-                    this.countDocuments()
-                ]);
-                //normalizo para no mandar toda la info de c/receta al front
+            
+            //funcion norlizo
+            const normalizo = (recetasDB) => {
                 let normalizo = recetasDB.map(r => {
                     return{
                         _id: r._id,
@@ -41,24 +40,44 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                         likes: r.likes
                     }
                 });
-
-                //busco la palabra en el title
+                return normalizo;
+            };
+            //funcion busco la palabra en el title
+            const buscaPalabra = (normaliz) => {
                 let arrRecetasFP = [];
-                for(let m = 0; m < normalizo.length; m ++){
-                    let result = normalizo[m].title.includes(palabraFront);
+                for(let m = 0; m < normaliz.length; m ++){
+                    let result = normaliz[m].title.includes(palabraFront);
                     if(result){
-                        arrRecetasFP.push(normalizo[m]);
+                        arrRecetasFP.push(normaliz[m]);
                     }
                 }
-                
-                /* filtro por dieta */                
+                return arrRecetasFP
+            };
+            //funcion filtro por dieta
+            const filtroDieta = (arrRecetasFP) => {
+                let r = [];
                 for (let i = 0; i < arrRecetasFP.length; i++) {
                     for (let j = 0; j < arrRecetasFP[i].diets.length; j++) {
                         if(arrRecetasFP[i].diets[j].name === dietaFront){
-                            resul.push(arrRecetasFP[i]);
+                            r.push(arrRecetasFP[i]);
                         }                
                     }            
                 }
+                return r;
+            };
+
+            /* SI viene palabra y DIETA---------------------------------------------------------*/
+            if(palabraFront && dietaFront){
+                const recetasDB = await this.find();//le pego a la DB , me traigo todas
+                //normalizo para no mandar toda la info de c/receta al front
+                const normaliz = normalizo(recetasDB);
+
+                //busco recetas con la palabra en el title
+                let arrRecetasFP = buscaPalabra(normaliz);                
+                
+                /* filtro por dieta el array antes construido*/
+                let resul = [] = filtroDieta(arrRecetasFP);                
+                
                 return {
                     recetas: resul,
                     page: {
@@ -70,33 +89,17 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 
             }
             /* SI SOLO viene  PALABRA-----------------------------------------------------------*/
-            else if(palabraFront){
-                const [recetasDB, totalRecetasDB] = await Promise.all([
+            if(palabraFront){
+                const [recetasDB ] = await Promise.all([
                     this.find(),
                     this.countDocuments()
                 ]);
                 //normalizo para no mandar toda la info de c/receta al front
-                let normalizo = recetasDB.map(r => {
-                    return{
-                        _id: r._id,
-                        title: r.title,                
-                        diets: r.diets.map((d) => {
-                            return d ;
-                        }),
-                        healthScore: r.healthScore,
-                        image: r.image,
-                        likes: r.likes
-                    }
-                });
+                const normaliz = normalizo(recetasDB);
 
                 //busco la palabra en el title
-                let arrRecetasFP = [];
-                for(let m = 0; m < normalizo.length; m ++){
-                    let result = normalizo[m].title.includes(palabraFront);
-                    if(result){
-                        arrRecetasFP.push(normalizo[m]);
-                    }
-                }
+                let arrRecetasFP = buscaPalabra(normaliz);
+
                 return {
                     recetas: arrRecetasFP,
                     page: {
@@ -108,37 +111,21 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                 
             }
             /* SI SOLO viene DIETA -----------------------------------------------------------------*/
-            else if(dietaFront){
-                const [recetasDB] = await Promise.all([
-                    this.find().skip(desde).limit(registrosPorPagina)
-                ]);            
+            if(dietaFront){
+                const recetasDB = await this.find();            
                 //normalizo para no mandar toda la info de c/receta al front
-                let normalizo = recetasDB.map(r => {
-                    return{
-                        _id: r._id,
-                        title: r.title,                
-                        diets: r.diets.map((d) => {
-                            return d ;
-                        }),
-                        healthScore: r.healthScore,
-                        image: r.image,
-                        likes: r.likes
-                    }
-                });
+                const normaliz = normalizo(recetasDB);
                 /* filtro por dieta */
-                for (let i = 0; i < normalizo.length; i++) {
-                    for (let j = 0; j < normalizo[i].diets.length; j++) {
-                        if(normalizo[i].diets[j].name === dietaFront){
-                            resul.push(normalizo[i]);
-                        }                
-                    }            
-                }
+                const recetasFiltradas = filtroDieta(normaliz);
+                /* fracciono el array result de a 20*/
+                const result = recetasFiltradas.slice(desdeFront, hastaFront);//corregir con for tal vez 
+                
                 return {
-                    recetas: resul,
+                    recetas: result,
                     page: {
                         desde,
                         registrosPorPagina,
-                        totalConsultaAct: resul.length
+                        totalConsultaAct: result.length
                     }
                 };
             }
@@ -149,20 +136,10 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront)
                     this.countDocuments()
                 ]);
                 //normalizo para no mandar toda la info de c/receta al front
-                let normalizo = recetasDB.map(r => {
-                    return{
-                        _id: r._id,
-                        title: r.title,                
-                        diets: r.diets.map((d) => {
-                            return d ;
-                        }),
-                        healthScore: r.healthScore,
-                        image: r.image,
-                        likes: r.likes
-                    }
-                });
+                const normaliz = normalizo(recetasDB);
+
                 return {
-                    recetas: normalizo,
+                    recetas: normaliz,
                     page: {
                         desde,
                         registrosPorPagina,

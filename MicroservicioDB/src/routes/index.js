@@ -13,7 +13,8 @@ router.get("/:model", validateModel, async(req, res) => {
     const { desde } = req.query;
     const { palabra } = req.query;
     const { dieta } = req.query;
-    const resp = await modelos[model].list(desde, palabra, dieta);//model --> indica el modelo al q ac referencia(recetas,)
+    const { hasta } = req.query;
+    const resp = await modelos[model].list(desde, palabra, dieta, hasta);//model --> indica el modelo al q ac referencia(recetas,)
     
     res.status(200).json(resp);
 });

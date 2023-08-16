@@ -63,23 +63,21 @@ console.log("cont: ",cont)
     
 
     //trae recetas de la API y de la DB
-    getAllRecetas: async(desde, palabra, dieta) => {
+    getAllRecetas: async(desde, palabra, dieta, hasta) => {
         try {
             console.log("desde",desde);
-        console.log("palabra",palabra);
-        console.log("dieta",dieta);
+            console.log("palabra",palabra);
+            console.log("dieta",dieta);
+            console.log("hasta",hasta);
             let respDB = [];
             let allR = [];
 
             if(dieta && palabra){
-                //con filtro
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}`);
-            }else if(!dieta && palabra){
-                //con filtro
+            }else if(palabra !== undefined){
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}`);
-            }else if(dieta && !palabra){
-                //con filtro
-                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}`);
+            }else if(dieta !== undefined){
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}&hasta=${hasta}`);
             }else{
                 //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
