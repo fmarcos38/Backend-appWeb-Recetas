@@ -73,9 +73,9 @@ console.log("cont: ",cont)
             let allR = [];
 
             if(dieta && palabra){
-                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}`);
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}&hasta=${hasta}`);
             }else if(palabra !== undefined){
-                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}`);
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&hasta=${hasta}`);
             }else if(dieta !== undefined){
                 respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}&hasta=${hasta}`);
             }else{

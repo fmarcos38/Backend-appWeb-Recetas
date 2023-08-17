@@ -14,16 +14,11 @@ const RecetaSchema = new Schema({
 //aquí mismo escribo los metodos del CRUD
 //trae recetas de la base de datos - realizo a su vez el paginado y filtrado por dieta
 RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront, hastaFront){ 
-    console.log("desde",desdeFront);
-            console.log("palabra",palabraFront);
-            console.log("dieta",dietaFront);
-            console.log("hasta",hastaFront);
 
     try {
             const desde = Number(desdeFront) || 0; //desdeFront lo voy a ir calculando y enviando(por query) desde el front
-            //para los registros SI viene filtro le agendo el indice
-            let registrosPorPagina = 20;            
-            //array para el filtrado por dieta
+            const hasta = Number(hastaFront) || 20;
+            const registrosPorPagina = 20;            
             
             
             //funcion norlizo
@@ -76,35 +71,38 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront,
                 let arrRecetasFP = buscaPalabra(normaliz);                
                 
                 /* filtro por dieta el array antes construido*/
-                let resul = [] = filtroDieta(arrRecetasFP);                
-                
+                let porDieta = [] = filtroDieta(arrRecetasFP);                
+                //corta de a 20 rectas
+                const result = porDieta.slice(desde, hasta);
+
                 return {
-                    recetas: resul,
+                    recetas: result,
                     page: {
                         desde,
                         registrosPorPagina,
-                        totalConsultaAct: resul.length
+                        hasta,
+                        totalConsultaAct: porDieta.length
                     }
                 };
                 
             }
             /* SI SOLO viene  PALABRA-----------------------------------------------------------*/
             if(palabraFront){
-                const [recetasDB ] = await Promise.all([
-                    this.find(),
-                    this.countDocuments()
-                ]);
+                const recetasDB = await this.find();  
                 //normalizo para no mandar toda la info de c/receta al front
                 const normaliz = normalizo(recetasDB);
 
                 //busco la palabra en el title
                 let arrRecetasFP = buscaPalabra(normaliz);
+                //corta de a 20 rectas
+                const result = arrRecetasFP.slice(desde, hasta);
 
                 return {
-                    recetas: arrRecetasFP,
+                    recetas: result,
                     page: {
                         desde,
                         registrosPorPagina,
+                        hasta,
                         totalConsultaAct: arrRecetasFP.length
                     }
                 };
@@ -117,15 +115,16 @@ RecetaSchema.statics.list = async function(desdeFront, palabraFront, dietaFront,
                 const normaliz = normalizo(recetasDB);
                 /* filtro por dieta */
                 const recetasFiltradas = filtroDieta(normaliz);
-                /* fracciono el array result de a 20*/
-                const result = recetasFiltradas.slice(desdeFront, hastaFront);//corregir con for tal vez 
+                //corta de a 20 rectas
+                const result = recetasFiltradas.slice(desde, hasta);
                 
                 return {
                     recetas: result,
                     page: {
                         desde,
                         registrosPorPagina,
-                        totalConsultaAct: result.length
+                        hasta,
+                        totalConsultaAct: recetasFiltradas.length
                     }
                 };
             }
