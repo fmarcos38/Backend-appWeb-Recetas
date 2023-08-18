@@ -28,7 +28,7 @@ module.exports = {
 
     //login clasico
     login: async (data) => {
-        console.log("data", data);
+        
         try {
             //busco user
             let user = await axios.get(`http://localhost:8002/dbrecetas/users/${data.email}`);
@@ -51,6 +51,7 @@ module.exports = {
                 const token = jwt.sign({ email: user.email }, process.env.JWT_SEC);
                 
                 const newObj = {user, token}; 
+                
                 return newObj;
             }
         } catch (error) {
