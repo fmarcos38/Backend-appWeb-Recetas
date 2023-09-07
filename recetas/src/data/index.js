@@ -11,14 +11,14 @@ module.exports = {
             let allR = [];
 
             if(dieta && palabra){
-                respDB =  await axios.get(`http://database:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}&hasta=${hasta}`);
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&dieta=${dieta}&hasta=${hasta}`);
             }else if(palabra !== undefined){
-                respDB =  await axios.get(`http://database:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&hasta=${hasta}`);
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&palabra=${palabra}&hasta=${hasta}`);
             }else if(dieta !== undefined){
-                respDB =  await axios.get(`http://database:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}&hasta=${hasta}`);
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}&dieta=${dieta}&hasta=${hasta}`);
             }else{
                 //obtengo todas las recetas de la DB sin filtro, SOLO PAGINADAS
-                respDB =  await axios.get(`http://database:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA database(desarrollo) o dbrecetas(producción)
+                respDB =  await axios.get(`http://localhost:8002/dbrecetas/recetas?desde=${desde}`);//desp lo cambiaré por el microservicio Q le pega a la DB ya SEA localhost(desarrollo) o dbrecetas(producción)
             }
 
             allR = respDB.data; 
@@ -31,7 +31,7 @@ module.exports = {
     //trae po ID
     getRecetaById: async(_id) => {
         try {
-            const resp = await axios.get(`http://database:8002/dbrecetas/recetas/busca/${_id}`);
+            const resp = await axios.get(`http://localhost:8002/dbrecetas/recetas/busca/${_id}`);
             return resp.data;
         } catch (error) {
             console.log(error);
@@ -40,8 +40,8 @@ module.exports = {
 
     //creación de receta
     createReceta: async(data) => {//de acá le voy a pegar al microservicio de DB -> ejm: axios.get("http://dbstarwars:8004/characters");
-        try {            
-            const resp = await axios.post("http://database:8002/dbrecetas/recetas", data);//desd acá le pego EN desarrollo a database Y una ves desarrollado el microserv de DB_user a ESTE.
+        try {
+            const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/createR", data);//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
             return resp.data;
         } catch (error) {
             console.log(error);
@@ -51,7 +51,7 @@ module.exports = {
     //crea recetas tomadas desde la api, en la DB (de a 60)
     createRecetasDesdeApi: async() => {
         try {
-            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=10&addRecipeInformation=true`);
+            const recetasApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=fd77382035884170b784a242bd0b14d2&number=100&addRecipeInformation=true`);
         
             const normalizo = recetasApi.data.results.map(r => {
                 return{
@@ -84,8 +84,8 @@ module.exports = {
                 }
             }); 
             
-            const resp = await axios.post("http://database:8002/dbrecetas/recetas/creaDesdeApi", normalizo);
-            console.log("resp.data: ", resp)
+            const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/creaDesdeApi", normalizo);
+            //console.log("resp.data: ", resp)
             return resp.data;
         } catch (error) {
             console.log(error);

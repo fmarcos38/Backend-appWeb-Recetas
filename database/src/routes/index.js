@@ -5,6 +5,7 @@ const { validateModel } = require('../middleware');
 const router = Router();
 
 
+
 //rutas
 //creo 1 sola ruta GET para q mute entre modelos
 //recibo por params el nombre del modelo
@@ -29,6 +30,7 @@ router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
+
 //trae receta por id
 router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     const { model, _id } = req.params;
@@ -36,6 +38,12 @@ router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
+//crea receta
+router.post("/:model/createR",validateModel, async(req, res) => {
+    const { model } = req.params;   
+    const resp = await modelos[model].createR(req.body);
+    res.status(200).json(resp);
+});
 /*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
 
 

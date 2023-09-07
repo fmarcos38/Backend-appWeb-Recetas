@@ -15,7 +15,7 @@ module.exports = {
 
             //actualizo propiedad verificado en la base de datos para dicho user
             //console.log("idU:", _id);
-            const user = await axios.get(`http://database:8002/dbrecetas/users/${email}`);//buscar user por email
+            const user = await axios.get(`http://localhost:8002/dbrecetas/users/${email}`);//buscar user por email
             if(!user){ return ({msg: "user not found"})}
             user.verified = true;
             await user.save();
@@ -29,12 +29,12 @@ module.exports = {
     //login clasico
     login: async (data) => {
         
-        try {
+        try {console.log("email:",data.email)
             //busco user
-            let user = await axios.get(`http://database:8002/dbrecetas/users/${data.email}`);
+            let user = await axios.get(`http://localhost:8002/dbrecetas/users/${data.email}`);
             user = user.data;
             
-            if(!user.name){
+            if(!user){
                 return {message: "user not found"};
             }else{
                 //si exist, desencripto pass q viene de la DB

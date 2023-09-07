@@ -1,9 +1,11 @@
 const {Schema} = require("mongoose");
 
+
 const RecetaSchema = new Schema({
     title: {type: String, require: true, unique: true},
     summary: {type: String},
     image: {type: String},
+    cloudinary_id: { type: String },
     diets: { type:Array,},
     healthScore: {type: Number},
     likes: {type: Number},
@@ -162,13 +164,14 @@ RecetaSchema.statics.listById = async function(_id){
     }
 };
 
-//crea receta , tambien en ves de crear de a una podria corroborar si lo q me llega COMO parametro es un array Y crear de una sola ves todas las del array
-RecetaSchema.statics.insert = async function(receta){
+//crea receta 
+RecetaSchema.statics.createR = async function(receta){
     try{
-        //console.log("dataInsert: ", receta);
+        console.log("dataInsert: ", receta);
         const resp = await this.create({
             title: receta.title,
             image: receta.image,
+            cloudinary_id: receta.cloudinary_id,
             diets: receta.diets,
             analyzedInstructions: receta.analyzedInstructions
         });
@@ -183,7 +186,7 @@ RecetaSchema.statics.insert = async function(receta){
 RecetaSchema.statics.insertRecetasApi = async function(recetas){
     try {        
         let arr = recetas;
-        console.log("arr: ", arr)
+        //console.log("arr: ", arr)
         for(let i=0; i<arr.length; i++){
             let resp = await this.create(arr[i]);
             await resp.save();
