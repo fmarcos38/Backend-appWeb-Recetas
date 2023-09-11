@@ -30,7 +30,6 @@ router.post("/:model/creaDesdeApi", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
-
 //trae receta por id
 router.get("/:model/busca/:_id", validateModel, async(req, res) => {
     const { model, _id } = req.params;
@@ -84,7 +83,12 @@ router.post("/:model", validateModel, async(req, res) => {
     res.status(200).json(resp);
 });
 
-
+//elimina
+router.delete("/:model/elimR/:_id",validateModel, async(req, res) => {
+    const { model, _id } = req.params; console.log("id:", _id)
+    const resp = await modelos[model].delete(_id);
+    res.status(200).json(resp);
+});
 
 
 //edita
@@ -94,12 +98,7 @@ router.post("/:model", validateModel, async(req, res) => {
     res.status(200).json(resp);
 }); */
 
-//elimina
-router.delete("/:model/:_id",validateModel, async(req, res) => {
-    const { model, _id } = req.params;
-    const resp = await modelos[model].delete(_id);
-    res.status(200).json(resp);
-});
+
 
 
 

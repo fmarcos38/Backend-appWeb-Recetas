@@ -167,7 +167,6 @@ RecetaSchema.statics.listById = async function(_id){
 //crea receta 
 RecetaSchema.statics.createR = async function(receta){
     try{
-        console.log("dataInsert: ", receta);
         const resp = await this.create({
             title: receta.title,
             image: receta.image,
@@ -212,7 +211,7 @@ RecetaSchema.statics.edit = async function(_id, title){
 //elimina
 RecetaSchema.statics.delete = async function(_id){
     try {
-        const elimReceta = await this.findByIdAndDelete(_id);
+        const elimReceta = await this.findByIdAndDelete({_id:_id});
         return elimReceta;
     } catch (error) {
         console.log(error);

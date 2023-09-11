@@ -109,7 +109,7 @@ module.exports = {
     eliminaReceta: async(req) => {
         try {
             const { _id } = req.params; //console.log("_id: ", _id);
-            const elimReceta = await axios.delete(`http://dbrecetas:8002/dbrecetas/recetas${_id}`);
+            const elimReceta = await axios.delete(`http://localhost:8002/dbrecetas/recetas/elimR/${_id}`);
 
             return elimReceta;
         } catch (error) {

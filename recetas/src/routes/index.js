@@ -58,7 +58,7 @@ router.post('/createR', parser.single("image"), async(req, res) => {
 router.post('/:_id', controllers.editaReceta);
 
 //elimina
-router.delete('/:_id', controllers.eleminaReceta);
+router.delete('/elimR/:_id', controllers.eleminaReceta);
 
 
 module.exports = router;
