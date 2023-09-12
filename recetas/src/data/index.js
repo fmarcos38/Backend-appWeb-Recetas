@@ -117,4 +117,13 @@ module.exports = {
         }        
     },
 
+    //elim dieta DB
+    elimDietaDB: async(data) => {
+        try {
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/elimDietDB`, data);
+            return resp;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 }  

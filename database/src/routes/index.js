@@ -43,6 +43,13 @@ router.post("/:model/createR",validateModel, async(req, res) => {
     const resp = await modelos[model].createR(req.body);
     res.status(200).json(resp);
 });
+
+//elim Dieta
+router.post("/:model/elimDietDB", validateModel, async(req, res) => {
+    const { model } = req.params;
+    const resp = await modelos[model].editaR(req.body);
+    res.status(200).json(resp);
+});
 /*---------------------FIN RUT.EXC RECETAS-------------------------------------------------------*/
 
 
@@ -85,7 +92,7 @@ router.post("/:model", validateModel, async(req, res) => {
 
 //elimina
 router.delete("/:model/elimR/:_id",validateModel, async(req, res) => {
-    const { model, _id } = req.params; console.log("id:", _id)
+    const { model, _id } = req.params;
     const resp = await modelos[model].delete(_id);
     res.status(200).json(resp);
 });

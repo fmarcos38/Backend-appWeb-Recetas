@@ -164,6 +164,21 @@ RecetaSchema.statics.listById = async function(_id){
     }
 };
 
+//crea recetas desde la api(me llega un array)
+RecetaSchema.statics.insertRecetasApi = async function(recetas){
+    try {        
+        let arr = recetas;
+        //console.log("arr: ", arr)
+        for(let i=0; i<arr.length; i++){
+            let resp = await this.create(arr[i]);
+            await resp.save();
+        }
+        return {message: "Creadas con exito"};
+    } catch (error) {
+        
+    }
+};
+
 //crea receta 
 RecetaSchema.statics.createR = async function(receta){
     try{
@@ -180,34 +195,26 @@ RecetaSchema.statics.createR = async function(receta){
         console.log(error);
     }
 };
+//edita dieta
+RecetaSchema.statics.editaR = async function(data){
+    try{
+        //busco la receta
+        const receta = await this.findById(data._id); 
 
-//crea recetas desde la api(me llega un array)
-RecetaSchema.statics.insertRecetasApi = async function(recetas){
-    try {        
-        let arr = recetas;
-        //console.log("arr: ", arr)
-        for(let i=0; i<arr.length; i++){
-            let resp = await this.create(arr[i]);
-            await resp.save();
-        }
-        return {message: "Creadas con exito"};
-    } catch (error) {
-        
-    }
-};
+        const newReceta = {
+            title: data.title || receta.title,
+            image: data.image || receta.image,
+            cloudinary_id: data.cloudinary_id || receta.cloudinary_id,
+            diets: data.diets || receta.diets,
+            analyzedInstructions: data.analyzedInstructions || receta.analyzedInstructions
+        };
 
-//edita
-RecetaSchema.statics.edit = async function(_id, title){
-    try {
-        const resp = await this.findById({_id: _id});
-        resp.title = title;
-        resp.save();
-        return resp;
+        await this.findByIdAndUpdate({_id: data._id}, newReceta);
+        return newReceta;
     } catch (error) {
         console.log(error);
-    }    
+    }
 };
-
 //elimina
 RecetaSchema.statics.delete = async function(_id){
     try {
@@ -217,6 +224,7 @@ RecetaSchema.statics.delete = async function(_id){
         console.log(error);
     }    
 };
+
 
 
 module.exports = RecetaSchema;

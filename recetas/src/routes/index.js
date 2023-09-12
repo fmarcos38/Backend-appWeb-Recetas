@@ -60,5 +60,8 @@ router.post('/:_id', controllers.editaReceta);
 //elimina
 router.delete('/elimR/:_id', controllers.eleminaReceta);
 
+//elim dieta DB
+router.post('/elimDietDB', controllers.elimDietDB);
+
 
 module.exports = router;
