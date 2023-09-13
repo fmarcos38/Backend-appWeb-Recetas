@@ -6,5 +6,5 @@ module.exports = {
     createRecetasApi: require('./createRecetasApi'),
     editaReceta: require('./editaReceta'),
     eleminaReceta: require('./eliminaReceta'),
-    elimDietDB: require('./elimDietaDB'),
+    
 }

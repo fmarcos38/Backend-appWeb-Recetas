@@ -92,19 +92,6 @@ module.exports = {
         }
     }, 
     
-    //editar
-    editaReceta: async(_id, title) => {
-        try { 
-            const resp = await axios.post(`http://dbrecetas:8002/dbrecetas/recetas/${_id}`, title);            
-            return resp.data;
-            
-        } catch (error) {
-            console.log(error);
-        }
-        
-
-    },
-
     //eliminar
     eliminaReceta: async(req) => {
         try {
@@ -117,10 +104,10 @@ module.exports = {
         }        
     },
 
-    //elim dieta DB
-    elimDietaDB: async(data) => {
+    //edita dieta DB
+    editaR: async(data) => {
         try {
-            const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/elimDietDB`, data);
+            const resp = await axios.post(`http://localhost:8002/dbrecetas/recetas/modifR`, data);
             return resp;
         } catch (error) {
             console.log(error);

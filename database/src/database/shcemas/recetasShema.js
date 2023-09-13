@@ -196,21 +196,21 @@ RecetaSchema.statics.createR = async function(receta){
     }
 };
 //edita dieta
-RecetaSchema.statics.editaR = async function(data){
-    try{
+RecetaSchema.statics.editaR = async function(newReceta){
+    try{ console.log("newR:", newReceta)
         //busco la receta
-        const receta = await this.findById(data._id); 
+        const receta = await this.findById(newReceta._id); 
 
-        const newReceta = {
-            title: data.title || receta.title,
-            image: data.image || receta.image,
-            cloudinary_id: data.cloudinary_id || receta.cloudinary_id,
-            diets: data.diets || receta.diets,
-            analyzedInstructions: data.analyzedInstructions || receta.analyzedInstructions
+        const newR = {
+            title: newReceta.title || receta.title,
+            image: newReceta.image || receta.image,
+            cloudinary_id: newReceta.cloudinary_id || receta.cloudinary_id,
+            diets: newReceta.diets || receta.diets,
+            analyzedInstructions: newReceta.analyzedInstructions || receta.analyzedInstructions
         };
 
-        await this.findByIdAndUpdate({_id: data._id}, newReceta);
-        return newReceta;
+        await this.findByIdAndUpdate({_id: newReceta._id}, newR);
+        return newR;
     } catch (error) {
         console.log(error);
     }

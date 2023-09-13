@@ -35,7 +35,6 @@ router.get('/', controllers.getAllRecetas);
 router.get('/:_id', controllers.getRecetaById);
 
 //crea
-
 router.post('/createR', parser.single("image"), async(req, res) => {
     try {
         const result = await cloudinary.uploader.upload(req.file.path);
@@ -46,22 +45,51 @@ router.post('/createR', parser.single("image"), async(req, res) => {
             diets: req.body.diets,
             analyzedInstructions: req.body.analyzedInstructions
         };
-        console.log("formData:", formData);
         const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/createR", formData, );//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
-        return resp.data;
+        res.status(200).json(resp.data);
+    } catch (error) {
+        console.log(error);
+    }
+});
+//edita receta
+router.put('/modifR', parser.single("image"), async(req, res) => {
+    try {
+        const { _id, title, image, diets, analyzedInstructions} = req.body;
+        let newReceta = {};
+        let result;
+        
+        newReceta._id = _id;
+        if(title){
+            newReceta.title = title;
+        }
+        // Upload image to cloudinary        
+        //si viene img nueva
+        if(req.file){
+            //delete cloud img vieja
+            await cloudinary.uploader.destroy(prod.cloudinary_id);
+            result = await cloudinary.uploader.upload(req.file.path);
+
+            newReceta.image = result.secure_url;
+            newReceta.cloudinary_id = result.public_id;
+        }
+        if(diets){
+            newReceta = diets;
+        }
+        if(analyzedInstructions){
+            newReceta.analyzedInstructions = analyzedInstructions;
+        }
+
+        const resp = await axios.put("http://localhost:8002/dbrecetas/recetas/modifR", newReceta);
+        res.status(200).json(resp.data);
     } catch (error) {
         console.log(error);
     }
 });
 
-//edita
-router.post('/:_id', controllers.editaReceta);
-
 //elimina
 router.delete('/elimR/:_id', controllers.eleminaReceta);
 
-//elim dieta DB
-router.post('/elimDietDB', controllers.elimDietDB);
+
 
 
 module.exports = router;

@@ -45,7 +45,7 @@ router.post("/:model/createR",validateModel, async(req, res) => {
 });
 
 //elim Dieta
-router.post("/:model/elimDietDB", validateModel, async(req, res) => {
+router.put("/:model/modifR", validateModel, async(req, res) => {
     const { model } = req.params;
     const resp = await modelos[model].editaR(req.body);
     res.status(200).json(resp);
