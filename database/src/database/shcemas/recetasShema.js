@@ -181,14 +181,15 @@ RecetaSchema.statics.insertRecetasApi = async function(recetas){
 
 //crea receta 
 RecetaSchema.statics.createR = async function(receta){
-    try{
+    try{ console.log("rec:", receta);
         const resp = await this.create({
             title: receta.title,
             image: receta.image,
-            cloudinary_id: receta.cloudinary_id,
+            //cloudinary_id: receta.cloudinary_id,
             diets: receta.diets,
             analyzedInstructions: receta.analyzedInstructions
         });
+        console.log("resp:", resp);
         await resp.save();
         return resp;
     } catch (error) {

@@ -35,17 +35,25 @@ router.get('/', controllers.getAllRecetas);
 router.get('/:_id', controllers.getRecetaById);
 
 //crea
-router.post('/createR', parser.single("image"), async(req, res) => {
-    try {
-        const result = await cloudinary.uploader.upload(req.file.path);
-        const formData = {
+router.post('/createR', /* parser.single("image") ,*/ async(req, res) => {
+    try {   
+        console.log("rece:", req.body);
+        //const result = await cloudinary.uploader.upload(req.file.path);
+        let dietas = [];
+        dietas = req.body.diets?.map(d => {
+            return {name: d}
+        });
+        
+        
+        const receta = {
             title: req.body.title,
-            image: result.secure_url,
-            cloudinary_id: result.public_id,
-            diets: req.body.diets,
-            analyzedInstructions: req.body.analyzedInstructions
+            image: req.body.image,//result.secure_url
+            //cloudinary_id: result.public_id,
+            diets: dietas,
+            analyzedInstructions: req.body.analyzedInstructions 
         };
-        const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/createR", formData, );//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
+        console.log("receta:", receta);
+        const resp = await axios.post("http://localhost:8002/dbrecetas/recetas/createR", receta, );//desd acá le pego EN desarrollo a localhost Y una ves desarrollado el microserv de DB_user a ESTE.
         res.status(200).json(resp.data);
     } catch (error) {
         console.log(error);
